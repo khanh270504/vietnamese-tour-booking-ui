@@ -1,7 +1,6 @@
 import { Heart, Trash2 } from "lucide-react";
 import { Link } from "react-router";
-import { Button } from "../components/ui/button";
-import { ImageWithFallback } from "../components/figma/ImageWithFallback";
+
 
 export function WishlistPage() {
   const wishlistTours = [
@@ -57,9 +56,9 @@ export function WishlistPage() {
             Thêm các tour bạn quan tâm vào danh sách yêu thích để dễ dàng theo dõi
           </p>
           <Link to="/tours">
-            <Button className="bg-[#2563eb] hover:bg-[#1d4ed8]">
+            <button className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white py-2 px-4 rounded-lg">
               Khám phá tour ngay
-            </Button>
+            </button>
           </Link>
         </div>
       ) : (
@@ -68,11 +67,7 @@ export function WishlistPage() {
             <div key={tour.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow">
               {/* Image */}
               <div className="relative h-48 overflow-hidden">
-                <ImageWithFallback
-                  src={tour.image}
-                  alt={tour.title}
-                  className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
-                />
+            
                 <button className="absolute top-2 right-2 bg-white/90 rounded-full p-2 hover:bg-white transition-colors group">
                   <Heart className="w-5 h-5 text-red-500 fill-red-500" />
                 </button>
@@ -107,17 +102,17 @@ export function WishlistPage() {
 
                 <div className="flex gap-2">
                   <Link to={`/tours/${tour.id}`} className="flex-1">
-                    <Button className="w-full bg-[#2563eb] hover:bg-[#1d4ed8]">
+                    <button className="w-full bg-[#2563eb] hover:bg-[#1d4ed8] text-white py-2 px-4 rounded-lg">
                       Xem chi tiết
-                    </Button>
+                    </button>
                   </Link>
-                  <Button
-                    variant="outline"
+                  <button
+                  
                     size="icon"
                     className="border-red-500 text-red-500 hover:bg-red-50"
                   >
                     <Trash2 className="w-4 h-4" />
-                  </Button>
+                  </button>
                 </div>
               </div>
             </div>

@@ -1,10 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { Mail, ArrowLeft, CheckCircle2 } from "lucide-react";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
-import { ImageWithFallback } from "../components/figma/ImageWithFallback";
+import { Mail, ArrowLeft, CheckCircle2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 export function ForgotPasswordPage() {
@@ -15,7 +11,6 @@ export function ForgotPasswordPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validation
     if (!email) {
       toast.error("Vui lòng nhập email");
       return;
@@ -36,140 +31,118 @@ export function ForgotPasswordPage() {
     }, 1500);
   };
 
+  // Giao diện khi gửi thành công
   if (isSuccess) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-        <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 text-center">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <CheckCircle2 className="w-10 h-10 text-green-600" />
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center p-4">
+        <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl p-10 text-center border border-gray-100 animate-in fade-in zoom-in duration-300">
+          <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+            <CheckCircle2 className="w-12 h-12 text-green-500" />
           </div>
-          <h2 className="text-2xl font-bold mb-2">Kiểm tra email của bạn</h2>
-          <p className="text-gray-600 mb-6">
-            Chúng tôi đã gửi hướng dẫn đặt lại mật khẩu đến email{" "}
-            <strong>{email}</strong>
+          <h2 className="text-2xl font-black text-gray-900 mb-3">Kiểm tra hộp thư!</h2>
+          <p className="text-gray-600 mb-8 leading-relaxed">
+            Chúng tôi đã gửi hướng dẫn đặt lại mật khẩu đến email <br />
+            <span className="font-bold text-gray-900 break-all">{email}</span>
           </p>
-          <p className="text-sm text-gray-500 mb-6">
-            Nếu bạn không nhận được email trong vài phút, vui lòng kiểm tra thư mục spam hoặc thử lại.
-          </p>
+          
           <div className="space-y-3">
-            <Link to="/login" className="block">
-              <Button className="w-full bg-[#2563eb] hover:bg-[#1d4ed8]">
-                Quay lại đăng nhập
-              </Button>
+            <Link 
+              to="/login" 
+              className="block w-full py-3.5 bg-[#2563eb] text-white rounded-2xl font-bold hover:bg-[#1d4ed8] transition-all shadow-lg shadow-blue-100 active:scale-95"
+            >
+              Quay lại đăng nhập
             </Link>
-            <Button
-              variant="outline"
-              className="w-full"
+            <button
               onClick={() => {
                 setIsSuccess(false);
                 setEmail("");
               }}
+              className="w-full py-3.5 border-2 border-gray-100 text-gray-500 rounded-2xl font-bold hover:bg-gray-50 transition-all active:scale-95"
             >
-              Gửi lại email
-            </Button>
+              Gửi lại email khác
+            </button>
           </div>
         </div>
       </div>
     );
   }
 
+  // Giao diện Form nhập email
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-0 bg-white rounded-2xl shadow-2xl overflow-hidden">
-        {/* Left Side - Image */}
-        <div className="hidden lg:block relative">
-          <ImageWithFallback
-            src="https://images.unsplash.com/photo-1643030080539-b411caf44c37?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxob2klMjBhbiUyMHZpZXRuYW0lMjBhbmNpZW50JTIwdG93bnxlbnwxfHx8fDE3NzI1MTA3Njd8MA&ixlib=rb-4.1.0&q=80&w=1080"
-            alt="Travel Vietnam"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#2563eb]/90 to-[#2563eb]/40 flex items-center justify-center p-12">
-            <div className="text-white text-center">
-              <h1 className="text-4xl font-bold mb-4">Quên mật khẩu?</h1>
-              <p className="text-lg opacity-90">
-                Đừng lo lắng, chúng tôi sẽ giúp bạn!
-              </p>
-              <p className="mt-2 opacity-75">
-                Nhập email để nhận hướng dẫn đặt lại mật khẩu
-              </p>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 bg-white rounded-[2rem] shadow-2xl overflow-hidden border border-gray-100">
+        
+        {/* Cột trái - Decor & Branding */}
+        <div className="hidden lg:block relative bg-[#2563eb]">
+          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1000')] bg-cover bg-center mix-blend-overlay opacity-40"></div>
+          <div className="relative h-full flex flex-col items-center justify-center p-12 text-center text-white">
+            <div className="mb-8 p-4 bg-white/10 backdrop-blur-md rounded-2xl">
+              <Mail className="w-12 h-12 text-white" />
             </div>
+            <h1 className="text-4xl font-black mb-4 tracking-tight">Quên mật khẩu?</h1>
+            <p className="text-lg text-blue-100 max-w-xs leading-relaxed">
+              Đừng lo lắng, chuyện này thường xuyên xảy ra. Nhập email và chúng mình sẽ giúp bạn lấy lại tài khoản ngay!
+            </p>
           </div>
         </div>
 
-        {/* Right Side - Forgot Password Form */}
-        <div className="p-8 lg:p-12 flex flex-col justify-center">
-          {/* Back Button */}
-          <Link to="/login" className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-[#2563eb] mb-8 transition-colors">
-            <ArrowLeft className="w-4 h-4" />
+        {/* Cột phải - Form */}
+        <div className="p-8 lg:p-16 flex flex-col justify-center bg-white">
+          <Link to="/login" className="inline-flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-[#2563eb] mb-10 transition-colors group">
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
             Quay lại đăng nhập
           </Link>
 
-          {/* Logo - Mobile */}
-          <div className="lg:hidden text-center mb-8">
-            <h1 className="text-3xl font-bold" style={{ color: '#2563eb' }}>
-              TravelVN
-            </h1>
+          <div className="mb-10">
+            <h2 className="text-3xl font-black text-gray-900 mb-3">Khôi phục mật khẩu</h2>
+            <p className="text-gray-500 font-medium">An toàn và bảo mật là ưu tiên hàng đầu của TravelVN.</p>
           </div>
 
-          {/* Title */}
-          <div className="mb-8">
-            <h2 className="text-3xl font-bold mb-2">Quên mật khẩu</h2>
-            <p className="text-gray-600">
-              Nhập email của bạn và chúng tôi sẽ gửi hướng dẫn đặt lại mật khẩu
-            </p>
-          </div>
-
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Email */}
-            <div>
-              <Label htmlFor="email">Email</Label>
-              <div className="relative mt-1">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <Input
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <label htmlFor="email" className="text-sm font-black text-gray-700 uppercase tracking-wider">
+                Địa chỉ Email
+              </label>
+              <div className="relative group">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#2563eb] transition-colors">
+                  <Mail className="w-5 h-5" />
+                </div>
+                <input
                   id="email"
                   type="email"
-                  placeholder="example@email.com"
+                  placeholder="name@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10 h-11"
+                  className="w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-transparent rounded-2xl outline-none focus:bg-white focus:border-[#2563eb] transition-all font-medium text-gray-900"
                   disabled={isLoading}
                 />
               </div>
             </div>
 
-            {/* Submit Button */}
-            <Button
+            <button
               type="submit"
-              className="w-full h-11 bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-medium"
+              className="w-full py-4 bg-[#2563eb] text-white rounded-2xl font-black text-lg hover:bg-[#1d4ed8] shadow-xl shadow-blue-100 transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
               disabled={isLoading}
             >
               {isLoading ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <div className="flex items-center justify-center gap-2">
+                  <Loader2 className="w-5 h-5 animate-spin" />
                   Đang xử lý...
                 </div>
               ) : (
                 "Gửi hướng dẫn"
               )}
-            </Button>
+            </button>
           </form>
 
-          {/* Back to Login */}
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              Nhớ mật khẩu rồi?{" "}
-              <Link to="/login" className="text-[#2563eb] hover:underline font-medium">
-                Đăng nhập ngay
-              </Link>
-            </p>
-          </div>
-
-          {/* Help Text */}
-          <div className="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-100">
-            <p className="text-sm text-gray-700">
-              <strong>Lưu ý:</strong> Email khôi phục sẽ được gửi trong vòng 5-10 phút. Nếu không thấy email, vui lòng kiểm tra thư mục spam hoặc liên hệ bộ phận hỗ trợ của chúng tôi.
-            </p>
+          {/* Tips box */}
+          <div className="mt-10 p-5 bg-orange-50 rounded-2xl border border-orange-100">
+            <div className="flex gap-3">
+              <div className="text-orange-500">💡</div>
+              <p className="text-xs text-orange-800 leading-relaxed font-medium">
+                Nếu bạn không tìm thấy email khôi phục trong <b>Hộp thư đến</b>, hãy thử kiểm tra mục <b>Quảng cáo</b> hoặc <b>Thư rác (Spam)</b> nhé!
+              </p>
+            </div>
           </div>
         </div>
       </div>

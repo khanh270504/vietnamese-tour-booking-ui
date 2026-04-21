@@ -1,13 +1,10 @@
-import { User, ShoppingBag, Heart, Settings, LogOut, Calendar, CreditCard } from "lucide-react";
+import { useState } from "react";
+import { User, ShoppingBag, Heart, Settings, LogOut, Calendar, CreditCard, MapPin, Phone, Mail, ChevronRight } from "lucide-react";
 import { Link } from "react-router";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
-import { Badge } from "../components/ui/badge";
-import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 
 export function ProfilePage() {
+  const [activeTab, setActiveTab] = useState("info");
+
   const userInfo = {
     name: "Trần Quốc Khánh",
     email: "khanhtran@email.com",
@@ -19,189 +16,148 @@ export function ProfilePage() {
     {
       id: "TRV2026030001",
       tourName: "Tour Vịnh Hạ Long - Đảo Cát Bà 3N2Đ",
-      image: "https://images.unsplash.com/photo-1668000018482-a02acf02b22a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoYWxvbmclMjBiYXklMjB2aWV0bmFtfGVufDF8fHx8MTc3MjUxMDc2NHww&ixlib=rb-4.1.0&q=80&w=1080",
+      image: "https://images.unsplash.com/photo-1668000018482-a02acf02b22a?q=80&w=600",
       departureDate: "15/06/2026",
       status: "confirmed",
+      statusText: "Đã xác nhận",
       amount: 11480000,
       bookingDate: "03/03/2026"
     },
     {
       id: "TRV2026020015",
       tourName: "Tour Đà Nẵng - Hội An 4N3Đ",
-      image: "https://images.unsplash.com/flagged/photo-1583863374731-4224cbbc8c36?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkYW5hbmclMjB2aWV0bmFtJTIwYmVhY2h8ZW58MXx8fHwxNzcyNTEwNzY1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      image: "https://images.unsplash.com/flagged/photo-1583863374731-4224cbbc8c36?q=80&w=600",
       departureDate: "20/02/2026",
       status: "completed",
+      statusText: "Đã hoàn thành",
       amount: 7490000,
       bookingDate: "15/01/2026"
-    },
-    {
-      id: "TRV2026010008",
-      tourName: "Tour Phú Quốc 3N2Đ",
-      image: "https://images.unsplash.com/photo-1693282815546-f7eeb0fa909b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwaHUlMjBxdW9jJTIwaXNsYW5kJTIwYmVhY2h8ZW58MXx8fHwxNzcyNDIyMDA3fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      departureDate: "10/01/2026",
-      status: "completed",
-      amount: 6990000,
-      bookingDate: "20/12/2025"
-    },
-  ];
-
-  const wishlistTours = [
-    {
-      id: "1",
-      image: "https://images.unsplash.com/photo-1649530928914-c2df337e3007?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzYXBhJTIwdmlldG5hbSUyMG1vdW50YWluc3xlbnwxfHx8fDE3NzI1MTA3NjZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      title: "Tour Sapa - Fansipan 4N3Đ",
-      price: 5490000,
-    },
-    {
-      id: "2",
-      image: "https://images.unsplash.com/photo-1643030292895-caeed7e5d4f1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx2aWV0bmFtJTIwdHJhdmVsJTIwYmVhY2h8ZW58MXx8fHwxNzcyNTEwNzY0fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      title: "Tour Nha Trang - Vinpearl 4N3Đ",
-      price: 6790000,
-    },
-  ];
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "confirmed":
-        return <Badge className="bg-green-500">Đã xác nhận</Badge>;
-      case "completed":
-        return <Badge className="bg-blue-500">Đã hoàn thành</Badge>;
-      case "cancelled":
-        return <Badge variant="destructive">Đã hủy</Badge>;
-      default:
-        return <Badge>Đang xử lý</Badge>;
     }
-  };
+  ];
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        {/* Sidebar */}
-        <aside className="lg:col-span-1">
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="text-center mb-6">
-              <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-3">
-                <User className="w-10 h-10 text-gray-500" />
-              </div>
-              <h2 className="font-semibold text-lg">{userInfo.name}</h2>
-              <p className="text-sm text-gray-600">{userInfo.email}</p>
-            </div>
-
-            <nav className="space-y-2">
-              <button className="w-full flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-left">
-                <User className="w-5 h-5" />
-                <span>Thông tin cá nhân</span>
-              </button>
-              <button className="w-full flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-left">
-                <ShoppingBag className="w-5 h-5" />
-                <span>Đơn của tôi</span>
-              </button>
-              <button className="w-full flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-left">
-                <Heart className="w-5 h-5" />
-                <span>Tour yêu thích</span>
-              </button>
-              <button className="w-full flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors text-left">
-                <Settings className="w-5 h-5" />
-                <span>Cài đặt</span>
-              </button>
-              <button className="w-full flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-red-50 text-red-600 transition-colors text-left">
-                <LogOut className="w-5 h-5" />
-                <span>Đăng xuất</span>
-              </button>
-            </nav>
-          </div>
-        </aside>
-
-        {/* Main Content */}
-        <div className="lg:col-span-3">
-          <Tabs defaultValue="info" className="w-full">
-            <TabsList className="grid grid-cols-3 w-full mb-6">
-              <TabsTrigger value="info">Thông tin cá nhân</TabsTrigger>
-              <TabsTrigger value="bookings">Đơn của tôi</TabsTrigger>
-              <TabsTrigger value="wishlist">Tour yêu thích</TabsTrigger>
-            </TabsList>
-
-            {/* Personal Info Tab */}
-            <TabsContent value="info">
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <h2 className="text-2xl font-semibold mb-6">Thông tin cá nhân</h2>
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="name">Họ và tên</Label>
-                      <Input id="name" defaultValue={userInfo.name} />
-                    </div>
-                    <div>
-                      <Label htmlFor="phone">Số điện thoại</Label>
-                      <Input id="phone" defaultValue={userInfo.phone} />
-                    </div>
-                  </div>
-                  <div>
-                    <Label htmlFor="email">Email</Label>
-                    <Input id="email" type="email" defaultValue={userInfo.email} />
-                  </div>
-                  <div>
-                    <Label htmlFor="address">Địa chỉ</Label>
-                    <Input id="address" defaultValue={userInfo.address} />
-                  </div>
-                  <Button className="bg-[#2563eb] hover:bg-[#1d4ed8]">
-                    Cập nhật thông tin
-                  </Button>
+    <div className="min-h-screen bg-[#f8fafc] py-12 px-4">
+      <div className="max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          
+          {/* SIDEBAR TỰ CHẾ */}
+          <aside className="lg:col-span-1">
+            <div className="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden sticky top-24">
+              <div className="p-8 text-center border-b border-gray-50">
+                <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-white shadow-md">
+                  <User className="w-10 h-10 text-blue-500" />
                 </div>
+                <h2 className="font-black text-gray-900 leading-tight">{userInfo.name}</h2>
+                <p className="text-xs text-gray-400 font-bold mt-1 tracking-wide">{userInfo.email}</p>
               </div>
-            </TabsContent>
 
-            {/* Bookings Tab */}
-            <TabsContent value="bookings">
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-2xl font-semibold">Lịch sử booking</h2>
-                  <p className="text-gray-600">{bookingHistory.length} đơn hàng</p>
+              <nav className="p-4 space-y-2">
+                {[
+                  { id: "info", icon: User, label: "Hồ sơ cá nhân" },
+                  { id: "bookings", icon: ShoppingBag, label: "Đơn của tôi" },
+                  { id: "wishlist", icon: Heart, label: "Tour yêu thích" },
+                  { id: "settings", icon: Settings, label: "Cài đặt" },
+                ].map((item) => (
+                  <button 
+                    key={item.id}
+                    onClick={() => setActiveTab(item.id)}
+                    className={`w-full flex items-center gap-3 px-5 py-3.5 rounded-2xl transition-all font-bold text-sm ${
+                      activeTab === item.id 
+                      ? "bg-blue-600 text-white shadow-lg shadow-blue-100" 
+                      : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+                    }`}
+                  >
+                    <item.icon className="w-5 h-5" />
+                    {item.label}
+                  </button>
+                ))}
+                <div className="pt-4 mt-4 border-t border-gray-50">
+                  <button className="w-full flex items-center gap-3 px-5 py-3.5 rounded-2xl text-red-500 hover:bg-red-50 transition-all font-bold text-sm">
+                    <LogOut className="w-5 h-5" />
+                    Đăng xuất
+                  </button>
+                </div>
+              </nav>
+            </div>
+          </aside>
+
+          {/* NỘI DUNG CHÍNH (THAY THẾ TABS CONTENT) */}
+          <div className="lg:col-span-3 space-y-6">
+            
+            {/* RENDER THEO TAB ACTIVE */}
+            {activeTab === "info" && (
+              <div className="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 p-8 md:p-12 animate-in fade-in slide-in-from-right-4 duration-500">
+                <h2 className="text-3xl font-black text-gray-900 mb-2">Thông tin cá nhân</h2>
+                <p className="text-gray-400 font-medium mb-10 text-sm">Quản lý thông tin tài khoản và địa chỉ của bạn</p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {[
+                    { label: "Họ và tên", value: userInfo.name, icon: User },
+                    { label: "Số điện thoại", value: userInfo.phone, icon: Phone },
+                    { label: "Email", value: userInfo.email, icon: Mail },
+                    { label: "Địa chỉ", value: userInfo.address, icon: MapPin },
+                  ].map((field, i) => (
+                    <div key={i} className="space-y-3">
+                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">{field.label}</label>
+                      <div className="relative group">
+                        <field.icon className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300 group-focus-within:text-blue-500 transition-colors" />
+                        <input 
+                          type="text" 
+                          defaultValue={field.value}
+                          className="w-full pl-14 pr-6 py-4 rounded-2xl border-2 border-gray-50 bg-gray-50/50 outline-none focus:border-blue-200 focus:bg-white transition-all font-bold text-gray-700"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <button className="mt-12 bg-gray-900 text-white px-10 py-4 rounded-2xl font-black text-sm hover:bg-black transition-all active:scale-95 shadow-xl">
+                  CẬP NHẬT THÔNG TIN
+                </button>
+              </div>
+            )}
+
+            {activeTab === "bookings" && (
+              <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
+                <div className="flex items-end justify-between px-4">
+                  <h2 className="text-3xl font-black text-gray-900 leading-none">Đơn hàng</h2>
+                  <span className="text-sm font-bold text-blue-600 bg-blue-50 px-4 py-1 rounded-full">{bookingHistory.length} Đơn</span>
                 </div>
 
                 {bookingHistory.map((booking) => (
-                  <div key={booking.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-6">
-                      <div className="md:col-span-1">
-                        <div className="relative h-32 rounded-lg overflow-hidden">
-                          <ImageWithFallback
-                            src={booking.image}
-                            alt={booking.tourName}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
+                  <div key={booking.id} className="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden group">
+                    <div className="flex flex-col md:flex-row">
+                      <div className="md:w-64 h-48 md:h-auto overflow-hidden">
+                        <img src={booking.image} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                       </div>
-                      <div className="md:col-span-3">
-                        <div className="flex items-start justify-between mb-2">
+                      <div className="flex-1 p-8">
+                        <div className="flex justify-between items-start mb-4">
                           <div>
-                            <h3 className="font-semibold text-lg mb-1">{booking.tourName}</h3>
-                            <p className="text-sm text-gray-600">Mã đơn: {booking.id}</p>
+                            <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-1">Mã đơn: {booking.id}</p>
+                            <h3 className="text-xl font-black text-gray-900 leading-tight">{booking.tourName}</h3>
                           </div>
-                          {getStatusBadge(booking.status)}
+                          <span className={`px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                            booking.status === 'confirmed' ? 'bg-green-100 text-green-600' : 'bg-blue-100 text-blue-600'
+                          }`}>
+                            {booking.statusText}
+                          </span>
                         </div>
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <Calendar className="w-4 h-4" />
-                            <span>{booking.departureDate}</span>
+
+                        <div className="grid grid-cols-2 gap-4 mb-8">
+                          <div className="flex items-center gap-2 text-sm font-bold text-gray-400">
+                            <Calendar className="w-4 h-4" /> {booking.departureDate}
                           </div>
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <CreditCard className="w-4 h-4" />
-                            <span>{booking.amount.toLocaleString('vi-VN')}₫</span>
-                          </div>
-                          <div className="text-sm text-gray-600">
-                            Đặt ngày: {booking.bookingDate}
+                          <div className="flex items-center gap-2 text-sm font-black text-blue-600">
+                            <CreditCard className="w-4 h-4" /> {booking.amount.toLocaleString('vi-VN')}₫
                           </div>
                         </div>
-                        <div className="flex gap-2 mt-4">
-                          <Link to={`/confirmation/${booking.id}`}>
-                            <Button variant="outline" size="sm">
-                              Xem chi tiết
-                            </Button>
+
+                        <div className="flex gap-3">
+                          <Link to={`/confirmation/${booking.id}`} className="flex-1">
+                            <button className="w-full bg-gray-50 text-gray-900 py-3 rounded-xl font-black text-xs hover:bg-gray-100 transition-all uppercase tracking-widest border border-gray-100">Chi tiết</button>
                           </Link>
                           {booking.status === "confirmed" && (
-                            <Button variant="outline" size="sm" className="text-red-500 hover:bg-red-50">
-                              Hủy đơn
-                            </Button>
+                            <button className="flex-1 bg-white text-red-500 py-3 rounded-xl font-black text-xs hover:bg-red-50 transition-all uppercase tracking-widest border border-red-100">Hủy đơn</button>
                           )}
                         </div>
                       </div>
@@ -209,54 +165,19 @@ export function ProfilePage() {
                   </div>
                 ))}
               </div>
-            </TabsContent>
+            )}
 
-            {/* Wishlist Tab */}
-            <TabsContent value="wishlist">
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-2xl font-semibold">Tour yêu thích</h2>
-                  <p className="text-gray-600">{wishlistTours.length} tour</p>
+            {activeTab === "wishlist" && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-right-4 duration-500">
+                {/* Re-use logic từ trang Payment hoặc list tour ở đây */}
+                <div className="col-span-full py-20 text-center bg-white rounded-[2.5rem] border-2 border-dashed border-gray-100">
+                  <Heart className="w-12 h-12 text-gray-200 mx-auto mb-4" />
+                  <p className="text-gray-400 font-bold">Danh sách yêu thích đang trống</p>
                 </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {wishlistTours.map((tour) => (
-                    <div key={tour.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-                      <div className="relative h-48">
-                        <ImageWithFallback
-                          src={tour.image}
-                          alt={tour.title}
-                          className="w-full h-full object-cover"
-                        />
-                        <button className="absolute top-2 right-2 bg-white/90 rounded-full p-2 hover:bg-white transition-colors">
-                          <Heart className="w-5 h-5 text-red-500 fill-red-500" />
-                        </button>
-                      </div>
-                      <div className="p-4">
-                        <h3 className="font-semibold mb-3">{tour.title}</h3>
-                        <div className="flex items-center justify-between">
-                          <p className="text-xl font-bold" style={{ color: '#2563eb' }}>
-                            {tour.price.toLocaleString('vi-VN')}₫
-                          </p>
-                          <Link to={`/tours/${tour.id}`}>
-                            <Button size="sm" className="bg-[#2563eb] hover:bg-[#1d4ed8]">
-                              Xem chi tiết
-                            </Button>
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <Link to="/wishlist" className="block">
-                  <Button variant="outline" className="w-full">
-                    Xem tất cả tour yêu thích
-                  </Button>
-                </Link>
               </div>
-            </TabsContent>
-          </Tabs>
+            )}
+
+          </div>
         </div>
       </div>
     </div>

@@ -1,6 +1,5 @@
 import { Link } from "react-router";
 import { Home, Search } from "lucide-react";
-import { Button } from "../components/ui/button";
 
 export function NotFound() {
   return (
@@ -16,16 +15,16 @@ export function NotFound() {
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link to="/">
-            <Button className="bg-[#2563eb] hover:bg-[#1d4ed8]">
+            <button className="bg-[#2563eb] hover:bg-[#1d4ed8]">
               <Home className="w-4 h-4 mr-2" />
               Về trang chủ
-            </Button>
+            </button>
           </Link>
           <Link to="/tours">
-            <Button variant="outline" className="border-[#2563eb] text-[#2563eb] hover:bg-[#2563eb] hover:text-white">
+            <button className="border-[#2563eb] text-[#2563eb] hover:bg-[#2563eb] hover:text-white">
               <Search className="w-4 h-4 mr-2" />
               Tìm tour
-            </Button>
+            </button>
           </Link>
         </div>
 

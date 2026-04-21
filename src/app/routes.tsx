@@ -14,11 +14,7 @@ import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
 import { NotFound } from "./pages/NotFound";
-import { AdminDashboard } from "./pages/admin/AdminDashboard";
-import { CustomersPage } from "./pages/admin/CustomersPage";
-import { BookingsPage } from "./pages/admin/BookingsPage";
-import { ToursPage } from "./pages/admin/ToursPage";
-import { SupportPage } from "./pages/admin/SupportPage";
+
 import { AdminRoute } from "./components/AdminRoute";
 
 export const router = createBrowserRouter([
@@ -44,24 +40,5 @@ export const router = createBrowserRouter([
   { path: "register", Component: RegisterPage },
   { path: "forgot-password", Component: ForgotPasswordPage },
   // Admin routes
-  {
-    path: "admin",
-    element: <AdminRoute><AdminDashboard /></AdminRoute>,
-  },
-  {
-    path: "admin/customers",
-    element: <AdminRoute><CustomersPage /></AdminRoute>,
-  },
-  {
-    path: "admin/bookings",
-    element: <AdminRoute><BookingsPage /></AdminRoute>,
-  },
-  {
-    path: "admin/tours",
-    element: <AdminRoute><ToursPage /></AdminRoute>,
-  },
-  {
-    path: "admin/support",
-    element: <AdminRoute><SupportPage /></AdminRoute>,
-  },
+  
 ]);
