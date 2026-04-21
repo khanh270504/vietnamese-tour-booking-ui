@@ -1,7 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { MessageCircle, X, Send } from "lucide-react";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
 
 interface Message {
   id: string;
@@ -17,17 +15,13 @@ export function ChatSupport() {
   const [inputMessage, setInputMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
-  // Get current user info
   const currentUser = JSON.parse(localStorage.getItem("currentUser") || "{}");
   const userId = currentUser.id || "guest";
   const userName = currentUser.name || "Khách";
   
-  // Load messages from localStorage
   const [messages, setMessages] = useState<Message[]>(() => {
     const savedMessages = localStorage.getItem(`chat_${userId}`);
-    if (savedMessages) {
-      return JSON.parse(savedMessages);
-    }
+    if (savedMessages) return JSON.parse(savedMessages);
     return [
       {
         id: "1",
@@ -38,7 +32,6 @@ export function ChatSupport() {
     ];
   });
 
-  // Auto scroll to bottom
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -47,7 +40,6 @@ export function ChatSupport() {
     scrollToBottom();
   }, [messages]);
 
-  // Save messages to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem(`chat_${userId}`, JSON.stringify(messages));
   }, [messages, userId]);
@@ -67,7 +59,6 @@ export function ChatSupport() {
     setMessages([...messages, newMessage]);
     setInputMessage("");
 
-    // Auto response
     setTimeout(() => {
       setMessages(prev => [...prev, {
         id: (Date.now() + 1).toString(),
@@ -80,51 +71,48 @@ export function ChatSupport() {
 
   return (
     <>
-      {/* Chat Icon Button */}
+      {/* Nút bong bóng chat thuần HTML */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-lg flex items-center justify-center z-50 hover:scale-110 transition-transform"
-          style={{ backgroundColor: '#2563eb' }}
+          className="fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-lg flex items-center justify-center z-50 hover:scale-110 transition-transform bg-[#2563eb] text-white"
         >
-          <MessageCircle className="w-6 h-6 text-white" />
+          <MessageCircle className="w-6 h-6" />
         </button>
       )}
 
-      {/* Chat Window */}
+      {/* Cửa sổ Chat */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 w-96 h-[500px] bg-white rounded-lg shadow-2xl z-50 flex flex-col">
+        <div className="fixed bottom-6 right-6 w-80 sm:w-96 h-[500px] bg-white rounded-2xl shadow-2xl z-50 flex flex-col border border-gray-200 overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
+          
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b" style={{ backgroundColor: '#2563eb' }}>
+          <div className="flex items-center justify-between p-4 bg-[#2563eb] text-white">
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-              <h3 className="font-semibold text-white">Hỗ trợ khách hàng</h3>
+              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <h3 className="font-semibold">Hỗ trợ khách hàng</h3>
             </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="text-white hover:bg-white/20 rounded p-1 transition-colors"
-            >
+            <button onClick={() => setIsOpen(false)} className="hover:bg-white/20 rounded-full p-1">
               <X className="w-5 h-5" />
             </button>
           </div>
 
-          {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          {/* Nội dung tin nhắn */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
             {messages.map((message) => (
               <div
                 key={message.id}
                 className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[70%] rounded-lg p-3 ${
+                  className={`max-w-[80%] rounded-2xl p-3 shadow-sm ${
                     message.sender === 'user'
-                      ? 'bg-[#2563eb] text-white'
-                      : 'bg-gray-100 text-gray-900'
+                      ? 'bg-[#2563eb] text-white rounded-tr-none'
+                      : 'bg-white text-gray-900 rounded-tl-none border border-gray-100'
                   }`}
                 >
                   <p className="text-sm">{message.text}</p>
-                  <p className={`text-xs mt-1 ${
-                    message.sender === 'user' ? 'text-blue-100' : 'text-gray-500'
+                  <p className={`text-[10px] mt-1 opacity-70 ${
+                    message.sender === 'user' ? 'text-right' : 'text-left'
                   }`}>
                     {message.time}
                   </p>
@@ -134,23 +122,23 @@ export function ChatSupport() {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input */}
-          <div className="p-4 border-t">
-            <div className="flex gap-2">
-              <Input
+          {/* Input nhập liệu thuần HTML */}
+          <div className="p-4 bg-white border-t">
+            <div className="flex gap-2 bg-gray-100 rounded-full px-4 py-2 items-center focus-within:ring-2 focus-within:ring-[#2563eb] transition-all">
+              <input
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSend()}
                 placeholder="Nhập nội dung..."
-                className="flex-1"
+                className="flex-1 bg-transparent border-none outline-none text-sm py-1"
               />
-              <Button
+              <button
                 onClick={handleSend}
-                size="icon"
-                className="bg-[#2563eb] hover:bg-[#1d4ed8]"
+                disabled={!inputMessage.trim()}
+                className="text-[#2563eb] hover:scale-110 transition-transform disabled:text-gray-400"
               >
-                <Send className="w-4 h-4" />
-              </Button>
+                <Send className="w-5 h-5" />
+              </button>
             </div>
           </div>
         </div>

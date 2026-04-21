@@ -1,7 +1,5 @@
 import { Link } from "react-router";
 import { CheckCircle2, Calendar, Users, MapPin, Download, Printer } from "lucide-react";
-import { Button } from "../components/ui/button";
-import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 
 export function ConfirmationPage() {
   const bookingInfo = {
@@ -53,11 +51,7 @@ export function ConfirmationPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="md:col-span-2">
               <div className="relative h-48 rounded-lg overflow-hidden mb-4">
-                <ImageWithFallback
-                  src="https://images.unsplash.com/photo-1668000018482-a02acf02b22a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoYWxvbmclMjBiYXklMjB2aWV0bmFtfGVufDF8fHx8MTc3MjUxMDc2NHww&ixlib=rb-4.1.0&q=80&w=1080"
-                  alt="Tour"
-                  className="w-full h-full object-cover"
-                />
+                
               </div>
               <h3 className="font-semibold text-lg mb-2">{bookingInfo.tourName}</h3>
             </div>
@@ -181,18 +175,18 @@ export function ConfirmationPage() {
         {/* Action Buttons */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Link to="/profile" className="w-full">
-            <Button variant="outline" className="w-full">
-              Xem đơn của tôi
-            </Button>
+            <button className="w-full px-4 py-2 border border-gray-300 bg-transparent text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+  Xem đơn của tôi
+</button>
           </Link>
-          <Button variant="outline" className="w-full">
+          <button className="w-full px-4 py-2 border border-gray-300 bg-transparent text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
             <Download className="w-4 h-4 mr-2" />
             Tải về PDF
-          </Button>
-          <Button variant="outline" className="w-full">
+          </button>
+          <button className="w-full px-4 py-2 border border-gray-300 bg-transparent text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
             <Printer className="w-4 h-4 mr-2" />
             In đơn hàng
-          </Button>
+          </button>
         </div>
 
         {/* Support Info */}
