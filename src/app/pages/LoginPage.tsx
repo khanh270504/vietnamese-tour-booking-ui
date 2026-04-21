@@ -1,12 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { Eye, EyeOff, Lock, Mail, ArrowLeft } from "lucide-react";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
-import { Checkbox } from "../components/ui/checkbox";
-import { ImageWithFallback } from "../components/figma/ImageWithFallback";
-import { toast } from "sonner";
+import { ImageFallback } from "../components/ImageFallback";
 
 export function LoginPage() {
   const navigate = useNavigate();
@@ -21,17 +16,17 @@ export function LoginPage() {
     
     // Validation
     if (!email || !password) {
-      toast.error("Vui lòng nhập đầy đủ thông tin");
+      console.error("Vui lòng nhập đầy đủ thông tin");
       return;
     }
 
     if (!email.includes("@")) {
-      toast.error("Email không hợp lệ");
+      console.error("Email không hợp lệ");
       return;
     }
 
     if (password.length < 6) {
-      toast.error("Mật khẩu phải có ít nhất 6 ký tự");
+      console.error("Mật khẩu phải có ít nhất 6 ký tự");
       return;
     }
 
@@ -48,9 +43,9 @@ export function LoginPage() {
       if (email === "admin@travelvn.com" || email.includes("admin")) {
         role = "admin";
         name = "Quản trị viên";
-        toast.success("Đăng nhập thành công với quyền Admin!");
+        console.log("Đăng nhập thành công với quyền Admin!");
       } else {
-        toast.success("Đăng nhập thành công!");
+        console.log("Đăng nhập thành công!");
       }
       
       // Save user info
@@ -79,10 +74,10 @@ export function LoginPage() {
   };
 
   const handleSocialLogin = (provider: string) => {
-    toast.info(`Đang kết nối với ${provider}...`);
+    console.log(`Đang kết nối với ${provider}...`);
     // Giả lập social login
     setTimeout(() => {
-      toast.success(`Đăng nhập ${provider} thành công!`);
+      console.log(`Đăng nhập ${provider} thành công!`);
       localStorage.setItem("isLoggedIn", "true");
       navigate("/");
     }, 1500);
@@ -93,7 +88,7 @@ export function LoginPage() {
       <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-0 bg-white rounded-2xl shadow-2xl overflow-hidden">
         {/* Left Side - Image */}
         <div className="hidden lg:block relative">
-          <ImageWithFallback
+          <ImageFallback
             src="https://images.unsplash.com/photo-1668000018482-a02acf02b22a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoYWxvbmclMjBiYXklMjB2aWV0bmFtfGVufDF8fHx8MTc3MjUxMDc2NHww&ixlib=rb-4.1.0&q=80&w=1080"
             alt="Travel Vietnam"
             className="w-full h-full object-cover"
@@ -139,10 +134,9 @@ export function LoginPage() {
 
           {/* Social Login */}
           <div className="space-y-3 mb-6">
-            <Button
+            <button
               type="button"
-              variant="outline"
-              className="w-full h-11 border-2 hover:bg-gray-50"
+              className="w-full h-11 border-2 border-gray-300 hover:bg-gray-50 rounded flex items-center justify-center"
               onClick={() => handleSocialLogin("Google")}
             >
               <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -164,18 +158,17 @@ export function LoginPage() {
                 />
               </svg>
               Đăng nhập với Google
-            </Button>
-            <Button
+            </button>
+            <button
               type="button"
-              variant="outline"
-              className="w-full h-11 border-2 hover:bg-gray-50"
+              className="w-full h-11 border-2 border-gray-300 hover:bg-gray-50 rounded flex items-center justify-center"
               onClick={() => handleSocialLogin("Facebook")}
             >
               <svg className="w-5 h-5 mr-2 text-[#1877F2]" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
               </svg>
               Đăng nhập với Facebook
-            </Button>
+            </button>
           </div>
 
           {/* Divider */}
@@ -192,16 +185,16 @@ export function LoginPage() {
           <form onSubmit={handleLogin} className="space-y-5">
             {/* Email */}
             <div>
-              <Label htmlFor="email">Email</Label>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">Email</label>
               <div className="relative mt-1">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <Input
+                <input
                   id="email"
                   type="email"
                   placeholder="example@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10 h-11"
+                  className="w-full pl-10 pr-3 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   disabled={isLoading}
                 />
               </div>
@@ -209,16 +202,16 @@ export function LoginPage() {
 
             {/* Password */}
             <div>
-              <Label htmlFor="password">Mật khẩu</Label>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">Mật khẩu</label>
               <div className="relative mt-1">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <Input
+                <input
                   id="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 pr-10 h-11"
+                  className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   disabled={isLoading}
                 />
                 <button
@@ -238,18 +231,20 @@ export function LoginPage() {
             {/* Remember Me & Forgot Password */}
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <Checkbox
+                <input
+                  type="checkbox"
                   id="remember"
                   checked={rememberMe}
-                  onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+                  onChange={(e) => setRememberMe(e.target.checked)}
                   disabled={isLoading}
+                  className="w-4 h-4 border border-gray-300 rounded cursor-pointer focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 />
-                <Label
+                <label
                   htmlFor="remember"
                   className="text-sm font-normal cursor-pointer"
                 >
                   Ghi nhớ đăng nhập
-                </Label>
+                </label>
               </div>
               <Link
                 to="/forgot-password"
@@ -260,9 +255,9 @@ export function LoginPage() {
             </div>
 
             {/* Submit Button */}
-            <Button
+            <button
               type="submit"
-              className="w-full h-11 bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-medium"
+              className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded flex items-center justify-center"
               disabled={isLoading}
             >
               {isLoading ? (
@@ -273,7 +268,7 @@ export function LoginPage() {
               ) : (
                 "Đăng nhập"
               )}
-            </Button>
+            </button>
           </form>
 
           {/* Terms */}

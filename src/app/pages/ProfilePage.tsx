@@ -1,13 +1,11 @@
+import { useState } from "react";
 import { User, ShoppingBag, Heart, Settings, LogOut, Calendar, CreditCard } from "lucide-react";
 import { Link } from "react-router";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
-import { Badge } from "../components/ui/badge";
-import { ImageWithFallback } from "../components/figma/ImageWithFallback";
+import { ImageFallback } from "../components/ImageFallback";
 
 export function ProfilePage() {
+  const [activeTab, setActiveTab] = useState("info");
+
   const userInfo = {
     name: "Trần Quốc Khánh",
     email: "khanhtran@email.com",
@@ -63,13 +61,13 @@ export function ProfilePage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "confirmed":
-        return <Badge className="bg-green-500">Đã xác nhận</Badge>;
+        return <span className="bg-green-500 text-white px-2 py-1 rounded text-sm">Đã xác nhận</span>;
       case "completed":
-        return <Badge className="bg-blue-500">Đã hoàn thành</Badge>;
+        return <span className="bg-blue-500 text-white px-2 py-1 rounded text-sm">Đã hoàn thành</span>;
       case "cancelled":
-        return <Badge variant="destructive">Đã hủy</Badge>;
+        return <span className="bg-red-500 text-white px-2 py-1 rounded text-sm">Đã hủy</span>;
       default:
-        return <Badge>Đang xử lý</Badge>;
+        return <span className="bg-gray-500 text-white px-2 py-1 rounded text-sm">Đang xử lý</span>;
     }
   };
 
@@ -114,45 +112,89 @@ export function ProfilePage() {
 
         {/* Main Content */}
         <div className="lg:col-span-3">
-          <Tabs defaultValue="info" className="w-full">
-            <TabsList className="grid grid-cols-3 w-full mb-6">
-              <TabsTrigger value="info">Thông tin cá nhân</TabsTrigger>
-              <TabsTrigger value="bookings">Đơn của tôi</TabsTrigger>
-              <TabsTrigger value="wishlist">Tour yêu thích</TabsTrigger>
-            </TabsList>
+          <div className="w-full">
+            <div className="grid grid-cols-3 w-full mb-6 border-b">
+              <button
+                onClick={() => setActiveTab("info")}
+                className={`px-4 py-2 text-center border-b-2 transition-colors ${
+                  activeTab === "info"
+                    ? "border-blue-500 text-blue-600"
+                    : "border-transparent text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                Thông tin cá nhân
+              </button>
+              <button
+                onClick={() => setActiveTab("bookings")}
+                className={`px-4 py-2 text-center border-b-2 transition-colors ${
+                  activeTab === "bookings"
+                    ? "border-blue-500 text-blue-600"
+                    : "border-transparent text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                Đơn của tôi
+              </button>
+              <button
+                onClick={() => setActiveTab("wishlist")}
+                className={`px-4 py-2 text-center border-b-2 transition-colors ${
+                  activeTab === "wishlist"
+                    ? "border-blue-500 text-blue-600"
+                    : "border-transparent text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                Tour yêu thích
+              </button>
+            </div>
 
             {/* Personal Info Tab */}
-            <TabsContent value="info">
+            {activeTab === "info" && (
               <div className="bg-white rounded-lg shadow-md p-6">
                 <h2 className="text-2xl font-semibold mb-6">Thông tin cá nhân</h2>
                 <div className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="name">Họ và tên</Label>
-                      <Input id="name" defaultValue={userInfo.name} />
+                      <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Họ và tên</label>
+                      <input
+                        id="name"
+                        defaultValue={userInfo.name}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
                     </div>
                     <div>
-                      <Label htmlFor="phone">Số điện thoại</Label>
-                      <Input id="phone" defaultValue={userInfo.phone} />
+                      <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">Số điện thoại</label>
+                      <input
+                        id="phone"
+                        defaultValue={userInfo.phone}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
                     </div>
                   </div>
                   <div>
-                    <Label htmlFor="email">Email</Label>
-                    <Input id="email" type="email" defaultValue={userInfo.email} />
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input
+                      id="email"
+                      type="email"
+                      defaultValue={userInfo.email}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
                   </div>
                   <div>
-                    <Label htmlFor="address">Địa chỉ</Label>
-                    <Input id="address" defaultValue={userInfo.address} />
+                    <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">Địa chỉ</label>
+                    <input
+                      id="address"
+                      defaultValue={userInfo.address}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
                   </div>
-                  <Button className="bg-[#2563eb] hover:bg-[#1d4ed8]">
+                  <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
                     Cập nhật thông tin
-                  </Button>
+                  </button>
                 </div>
               </div>
-            </TabsContent>
+            )}
 
             {/* Bookings Tab */}
-            <TabsContent value="bookings">
+            {activeTab === "bookings" && (
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <h2 className="text-2xl font-semibold">Lịch sử booking</h2>
@@ -164,7 +206,7 @@ export function ProfilePage() {
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-6">
                       <div className="md:col-span-1">
                         <div className="relative h-32 rounded-lg overflow-hidden">
-                          <ImageWithFallback
+                          <ImageFallback
                             src={booking.image}
                             alt={booking.tourName}
                             className="w-full h-full object-cover"
@@ -194,14 +236,14 @@ export function ProfilePage() {
                         </div>
                         <div className="flex gap-2 mt-4">
                           <Link to={`/confirmation/${booking.id}`}>
-                            <Button variant="outline" size="sm">
+                            <button className="border border-gray-300 text-gray-700 hover:bg-gray-50 px-3 py-1 rounded text-sm">
                               Xem chi tiết
-                            </Button>
+                            </button>
                           </Link>
                           {booking.status === "confirmed" && (
-                            <Button variant="outline" size="sm" className="text-red-500 hover:bg-red-50">
+                            <button className="border border-red-500 text-red-500 hover:bg-red-50 px-3 py-1 rounded text-sm">
                               Hủy đơn
-                            </Button>
+                            </button>
                           )}
                         </div>
                       </div>
@@ -209,10 +251,10 @@ export function ProfilePage() {
                   </div>
                 ))}
               </div>
-            </TabsContent>
+            )}
 
             {/* Wishlist Tab */}
-            <TabsContent value="wishlist">
+            {activeTab === "wishlist" && (
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <h2 className="text-2xl font-semibold">Tour yêu thích</h2>
@@ -223,7 +265,7 @@ export function ProfilePage() {
                   {wishlistTours.map((tour) => (
                     <div key={tour.id} className="bg-white rounded-lg shadow-md overflow-hidden">
                       <div className="relative h-48">
-                        <ImageWithFallback
+                        <ImageFallback
                           src={tour.image}
                           alt={tour.title}
                           className="w-full h-full object-cover"
@@ -239,9 +281,9 @@ export function ProfilePage() {
                             {tour.price.toLocaleString('vi-VN')}₫
                           </p>
                           <Link to={`/tours/${tour.id}`}>
-                            <Button size="sm" className="bg-[#2563eb] hover:bg-[#1d4ed8]">
+                            <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
                               Xem chi tiết
-                            </Button>
+                            </button>
                           </Link>
                         </div>
                       </div>
@@ -250,13 +292,13 @@ export function ProfilePage() {
                 </div>
 
                 <Link to="/wishlist" className="block">
-                  <Button variant="outline" className="w-full">
+                  <button className="border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded w-full">
                     Xem tất cả tour yêu thích
-                  </Button>
+                  </button>
                 </Link>
               </div>
-            </TabsContent>
-          </Tabs>
+            )}
+          </div>
         </div>
       </div>
     </div>

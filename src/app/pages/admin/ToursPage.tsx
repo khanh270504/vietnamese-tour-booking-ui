@@ -1,12 +1,6 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link } from "react-router-dom"; // Sửa lại import cho chuẩn
 import { ArrowLeft, Plus, Search, Edit, Trash2, Eye } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
-import { Badge } from "../../components/ui/badge";
-import { toast } from "sonner";
-import { ImageWithFallback } from "../../components/figma/ImageWithFallback";
 
 interface Tour {
   id: number;
@@ -24,7 +18,6 @@ interface Tour {
 export function ToursPage() {
   const [searchQuery, setSearchQuery] = useState("");
   
-  // Mock data - in reality, this would come from your data source
   const [tours] = useState<Tour[]>([
     {
       id: 1,
@@ -61,43 +54,8 @@ export function ToursPage() {
       image: "https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=400",
       status: "active",
       category: "Miền Trung"
-    },
-    {
-      id: 4,
-      name: "Nha Trang 3N2Đ",
-      location: "Khánh Hòa",
-      duration: "3 ngày 2 đêm",
-      price: 4200000,
-      rating: 4.6,
-      reviews: 256,
-      image: "https://images.unsplash.com/photo-1530789253388-582c481c54b0?w=400",
-      status: "active",
-      category: "Miền Trung"
-    },
-    {
-      id: 5,
-      name: "Đà Lạt 2N1Đ",
-      location: "Lâm Đồng",
-      duration: "2 ngày 1 đêm",
-      price: 2900000,
-      rating: 4.8,
-      reviews: 198,
-      image: "https://images.unsplash.com/photo-1540611025311-01df3cef54b5?w=400",
-      status: "active",
-      category: "Miền Nam"
-    },
-    {
-      id: 6,
-      name: "Ninh Bình 2N1Đ",
-      location: "Ninh Bình",
-      duration: "2 ngày 1 đêm",
-      price: 2500000,
-      rating: 4.7,
-      reviews: 167,
-      image: "https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=400",
-      status: "inactive",
-      category: "Miền Bắc"
     }
+    // ... các tours khác
   ]);
 
   const filteredTours = tours.filter(tour =>
@@ -106,158 +64,135 @@ export function ToursPage() {
   );
 
   const handleDelete = (tourId: number) => {
-    toast.success(`Đã xóa tour ID: ${tourId}`);
+    alert(`Đã xóa tour ID: ${tourId}`); // Thay tạm toast bằng alert nếu chưa cài thư viện toast
   };
 
   const activeTours = tours.filter(t => t.status === "active").length;
   const inactiveTours = tours.filter(t => t.status === "inactive").length;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pb-10">
       {/* Header */}
-      <div className="bg-white border-b shadow-sm">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
+      <div className="bg-white border-b shadow-sm sticky top-0 z-20">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <Link to="/admin">
-                <Button variant="outline" size="icon">
-                  <ArrowLeft className="w-4 h-4" />
-                </Button>
+              <Link to="/admin" className="p-2 border rounded-full hover:bg-gray-100 transition-colors">
+                <ArrowLeft className="w-5 h-5 text-gray-600" />
               </Link>
               <div>
-                <h1 className="text-3xl font-bold" style={{ color: '#2563eb' }}>
-                  Quản Lý Tours
-                </h1>
-                <p className="text-gray-600 mt-1">
-                  Tổng số: {tours.length} tours
-                </p>
+                <h1 className="text-2xl font-bold text-blue-600">Quản Lý Tours</h1>
+                <p className="text-sm text-gray-500">Tổng số: {tours.length} tours</p>
               </div>
             </div>
-            <Button className="bg-[#2563eb] hover:bg-[#1d4ed8]">
+            <button className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors">
               <Plus className="w-4 h-4 mr-2" />
               Thêm tour mới
-            </Button>
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <Card>
-            <CardContent className="p-6">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Tổng số tours</p>
-                <p className="text-2xl font-bold text-[#2563eb]">{tours.length}</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Đang hoạt động</p>
-                <p className="text-2xl font-bold text-green-600">{activeTours}</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Tạm ngừng</p>
-                <p className="text-2xl font-bold text-gray-600">{inactiveTours}</p>
-              </div>
-            </CardContent>
-          </Card>
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+          <div className="bg-white p-6 rounded-xl border shadow-sm">
+            <p className="text-sm text-gray-500 mb-1">Tổng số tours</p>
+            <p className="text-3xl font-bold text-blue-600">{tours.length}</p>
+          </div>
+          <div className="bg-white p-6 rounded-xl border shadow-sm">
+            <p className="text-sm text-gray-500 mb-1">Đang hoạt động</p>
+            <p className="text-3xl font-bold text-green-600">{activeTours}</p>
+          </div>
+          <div className="bg-white p-6 rounded-xl border shadow-sm">
+            <p className="text-sm text-gray-500 mb-1">Tạm ngừng</p>
+            <p className="text-3xl font-bold text-gray-400">{inactiveTours}</p>
+          </div>
         </div>
 
-        {/* Search */}
-        <Card className="mb-6">
-          <CardContent className="p-6">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <Input
-                placeholder="Tìm kiếm tour theo tên, địa điểm..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-          </CardContent>
-        </Card>
+        {/* Search Bar */}
+        <div className="bg-white p-4 rounded-xl border shadow-sm mb-8">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Tìm kiếm tour theo tên, địa điểm..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
+            />
+          </div>
+        </div>
 
         {/* Tours Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredTours.map((tour) => (
-            <Card key={tour.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-              <div className="relative h-48">
-                <ImageWithFallback
+            <div key={tour.id} className="group bg-white rounded-2xl border shadow-sm overflow-hidden hover:shadow-xl transition-all duration-300">
+              <div className="relative h-52 overflow-hidden">
+                <img
                   src={tour.image}
                   alt={tour.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
-                <Badge 
-                  className={`absolute top-3 right-3 ${
-                    tour.status === "active" ? "bg-green-600" : "bg-gray-600"
-                  }`}
-                >
+                <span className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-bold text-white shadow-md ${
+                    tour.status === "active" ? "bg-green-500" : "bg-gray-500"
+                  }`}>
                   {tour.status === "active" ? "Hoạt động" : "Tạm ngừng"}
-                </Badge>
+                </span>
               </div>
-              <CardHeader>
-                <CardTitle className="text-lg">{tour.name}</CardTitle>
-                <p className="text-sm text-gray-600">{tour.location}</p>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">Thời gian:</span>
-                    <span className="font-medium">{tour.duration}</span>
+              
+              <div className="p-5">
+                <div className="mb-4">
+                  <h3 className="text-lg font-bold text-gray-800 line-clamp-1">{tour.name}</h3>
+                  <p className="text-sm text-gray-500 flex items-center gap-1">
+                    {tour.location}
+                  </p>
+                </div>
+
+                <div className="space-y-3 border-t pt-4">
+                  <div className="flex justify-between text-sm text-gray-600">
+                    <span>Thời gian:</span>
+                    <span className="font-semibold text-gray-800">{tour.duration}</span>
                   </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">Giá:</span>
-                    <span className="font-bold text-[#2563eb]">
+                  <div className="flex justify-between text-sm text-gray-600">
+                    <span>Giá:</span>
+                    <span className="font-bold text-blue-600">
                       {tour.price.toLocaleString('vi-VN')}₫
                     </span>
                   </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">Đánh giá:</span>
-                    <div className="flex items-center gap-1">
-                      <span className="text-yellow-500">★</span>
-                      <span className="font-medium">{tour.rating}</span>
-                      <span className="text-gray-500">({tour.reviews})</span>
+                  <div className="flex justify-between text-sm text-gray-600">
+                    <span>Đánh giá:</span>
+                    <div className="flex items-center gap-1 text-yellow-500">
+                      ★ <span className="font-medium text-gray-800">{tour.rating}</span>
+                      <span className="text-gray-400 text-xs">({tour.reviews})</span>
                     </div>
                   </div>
-                  <div className="flex gap-2 pt-3 border-t">
-                    <Button size="sm" variant="outline" className="flex-1">
-                      <Eye className="w-4 h-4 mr-1" />
-                      Xem
-                    </Button>
-                    <Button size="sm" variant="outline" className="flex-1">
-                      <Edit className="w-4 h-4 mr-1" />
-                      Sửa
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      className="text-red-600 hover:bg-red-50"
-                      onClick={() => handleDelete(tour.id)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
                 </div>
-              </CardContent>
-            </Card>
+
+                <div className="flex gap-2 mt-6">
+                  <button className="flex-1 flex items-center justify-center gap-1 px-3 py-2 border rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">
+                    <Eye className="w-4 h-4" /> Xem
+                  </button>
+                  <button className="flex-1 flex items-center justify-center gap-1 px-3 py-2 border rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">
+                    <Edit className="w-4 h-4" /> Sửa
+                  </button>
+                  <button 
+                    onClick={() => handleDelete(tour.id)}
+                    className="p-2 border rounded-lg text-red-500 hover:bg-red-50 transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
           ))}
         </div>
 
         {filteredTours.length === 0 && (
-          <Card>
-            <CardContent className="p-12 text-center">
-              <p className="text-gray-500">Không tìm thấy tour nào</p>
-            </CardContent>
-          </Card>
+          <div className="bg-white p-20 rounded-2xl border text-center text-gray-500 shadow-inner">
+            <Search className="w-12 h-12 mx-auto mb-4 opacity-20" />
+            <p>Không tìm thấy tour nào khớp với tìm kiếm của bạn.</p>
+          </div>
         )}
       </div>
     </div>

@@ -10,8 +10,6 @@ import {
   Clock,
   CheckCircle
 } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
-import { Button } from "../../components/ui/button";
 
 export function AdminDashboard() {
   const [stats, setStats] = useState({
@@ -110,9 +108,9 @@ export function AdminDashboard() {
             </div>
             <div className="flex gap-3">
               <Link to="/">
-                <Button variant="outline">
+                <button className="border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded">
                   Về trang chủ
-                </Button>
+                </button>
               </Link>
             </div>
           </div>
@@ -125,8 +123,8 @@ export function AdminDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {statCards.map((stat, index) => (
             <Link key={index} to={stat.link}>
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardContent className="p-6">
+              <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer">
+                <div className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-gray-600 mb-1">
@@ -140,55 +138,55 @@ export function AdminDashboard() {
                       <stat.icon className="w-8 h-8" />
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </Link>
           ))}
         </div>
 
         {/* Quick Actions */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Tác vụ nhanh</CardTitle>
-            <CardDescription>Các chức năng quản lý chính</CardDescription>
-          </CardHeader>
-          <CardContent>
+        <div className="bg-white rounded-lg shadow-md mb-8">
+          <div className="p-6 border-b">
+            <h3 className="text-lg font-semibold">Tác vụ nhanh</h3>
+            <p className="text-sm text-gray-600 mt-1">Các chức năng quản lý chính</p>
+          </div>
+          <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <Link to="/admin/customers">
-                <Button className="w-full h-20 bg-[#2563eb] hover:bg-[#1d4ed8]" size="lg">
+                <button className="w-full h-20 bg-blue-600 hover:bg-blue-700 text-white rounded flex items-center justify-center">
                   <Users className="w-5 h-5 mr-2" />
                   Quản lý khách hàng
-                </Button>
+                </button>
               </Link>
               <Link to="/admin/bookings">
-                <Button className="w-full h-20 bg-green-600 hover:bg-green-700" size="lg">
+                <button className="w-full h-20 bg-green-600 hover:bg-green-700 text-white rounded flex items-center justify-center">
                   <ShoppingBag className="w-5 h-5 mr-2" />
                   Quản lý đơn hàng
-                </Button>
+                </button>
               </Link>
               <Link to="/admin/tours">
-                <Button className="w-full h-20 bg-yellow-600 hover:bg-yellow-700" size="lg">
+                <button className="w-full h-20 bg-yellow-600 hover:bg-yellow-700 text-white rounded flex items-center justify-center">
                   <MapPin className="w-5 h-5 mr-2" />
                   Quản lý Tours
-                </Button>
+                </button>
               </Link>
               <Link to="/admin/support">
-                <Button className="w-full h-20 bg-purple-600 hover:bg-purple-700" size="lg">
+                <button className="w-full h-20 bg-purple-600 hover:bg-purple-700 text-white rounded flex items-center justify-center">
                   <MessageSquare className="w-5 h-5 mr-2" />
                   Hỗ trợ khách hàng
-                </Button>
+                </button>
               </Link>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Recent Activity */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Hoạt động gần đây</CardTitle>
-            </CardHeader>
-            <CardContent>
+          <div className="bg-white rounded-lg shadow-md">
+            <div className="p-6 border-b">
+              <h3 className="text-lg font-semibold">Hoạt động gần đây</h3>
+            </div>
+            <div className="p-6">
               <div className="space-y-4">
                 <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
                   <div className="bg-blue-600 text-white p-2 rounded">
@@ -218,14 +216,14 @@ export function AdminDashboard() {
                   </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Thông tin hệ thống</CardTitle>
-            </CardHeader>
-            <CardContent>
+          <div className="bg-white rounded-lg shadow-md">
+            <div className="p-6 border-b">
+              <h3 className="text-lg font-semibold">Thông tin hệ thống</h3>
+            </div>
+            <div className="p-6">
               <div className="space-y-4">
                 <div className="flex justify-between items-center p-3 border rounded-lg">
                   <span className="text-sm font-medium">Phiên bản</span>
@@ -240,8 +238,8 @@ export function AdminDashboard() {
                   <span className="text-sm text-gray-600">10/03/2026</span>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </div>
     </div>

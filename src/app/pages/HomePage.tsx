@@ -1,11 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { Search, MapPin, Calendar, ArrowRight } from "lucide-react";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
 import { TourCard } from "../components/TourCard";
-import { ImageWithFallback } from "../components/figma/ImageWithFallback";
+import { ImageFallback } from "../components/ImageFallback";
 import { PromoBanner } from "../components/PromoBanner";
+import { Button } from "../components/Button";
 
 export function HomePage() {
   const [destination, setDestination] = useState("");
@@ -103,7 +102,7 @@ export function HomePage() {
       
       {/* Hero Section */}
       <div className="relative h-[500px] overflow-hidden">
-        <ImageWithFallback
+        <ImageFallback
           src="https://images.unsplash.com/photo-1643030292895-caeed7e5d4f1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx2aWV0bmFtJTIwdHJhdmVsJTIwYmVhY2h8ZW58MXx8fHwxNzcyNTEwNzY0fDA&ixlib=rb-4.1.0&q=80&w=1080"
           alt="Hero"
           className="w-full h-full object-cover"
@@ -122,28 +121,29 @@ export function HomePage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="relative">
                   <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <Input
+                  <input
+                    type="text"
                     value={destination}
                     onChange={(e) => setDestination(e.target.value)}
                     placeholder="Bạn muốn đi đâu?"
-                    className="pl-10"
+                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div className="relative">
                   <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <Input
+                  <input
                     type="date"
                     value={departureDate}
                     onChange={(e) => setDepartureDate(e.target.value)}
                     placeholder="Ngày khởi hành"
-                    className="pl-10"
+                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <Link to="/tours">
-                  <Button className="w-full bg-[#2563eb] hover:bg-[#1d4ed8] h-10">
+                  <button className="w-full bg-blue-600 hover:bg-blue-700 text-white h-10 rounded flex items-center justify-center">
                     <Search className="w-4 h-4 mr-2" />
                     Tìm kiếm
-                  </Button>
+                  </button>
                 </Link>
               </div>
             </div>
@@ -185,7 +185,7 @@ export function HomePage() {
             {popularDestinations.map((destination, index) => (
               <Link key={index} to={`/tours?destination=${destination.name}`}>
                 <div className="relative h-64 rounded-lg overflow-hidden group cursor-pointer shadow-md hover:shadow-xl transition-shadow">
-                  <ImageWithFallback
+                  <ImageFallback
                     src={destination.image}
                     alt={destination.name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
@@ -207,7 +207,7 @@ export function HomePage() {
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="relative h-64 rounded-2xl overflow-hidden">
-            <ImageWithFallback
+            <ImageFallback
               src="https://images.unsplash.com/photo-1643030080539-b411caf44c37?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxob2klMjBhbiUyMHZpZXRuYW0lMjBhbmNpZW50JTIwdG93bnxlbnwxfHx8fDE3NzI1MTA3Njd8MA&ixlib=rb-4.1.0&q=80&w=1080"
               alt="CTA"
               className="w-full h-full object-cover"

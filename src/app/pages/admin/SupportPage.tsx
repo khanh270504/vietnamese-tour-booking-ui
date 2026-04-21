@@ -1,11 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { Link } from "react-router";
+import { Link } from "react-router-dom"; // Sửa lại import cho đúng chuẩn react-router-dom
 import { ArrowLeft, Send, User, Search } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
-import { Badge } from "../../components/ui/badge";
-import { ScrollArea } from "../../components/ui/scroll-area";
 
 interface Message {
   id: string;
@@ -33,7 +28,6 @@ export function SupportPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Load all chat sessions from localStorage
     const chatKeys = Object.keys(localStorage).filter(key => key.startsWith("chat_"));
     const sessions: ChatSession[] = chatKeys.map((key, index) => {
       const userId = key.replace("chat_", "");
@@ -59,7 +53,7 @@ export function SupportPage() {
 
   useEffect(() => {
     scrollToBottom();
-  }, [selectedChat]);
+  }, [selectedChat?.messages]); // Cuộn khi có tin nhắn mới
 
   const handleSendReply = () => {
     if (!replyMessage.trim() || !selectedChat) return;
@@ -72,26 +66,21 @@ export function SupportPage() {
     };
 
     const updatedMessages = [...selectedChat.messages, newMessage];
-    
-    // Update localStorage
     localStorage.setItem(`chat_${selectedChat.userId}`, JSON.stringify(updatedMessages));
 
-    // Update state
-    setSelectedChat({
+    const updatedSession = {
       ...selectedChat,
       messages: updatedMessages,
       lastMessage: newMessage.text,
       lastMessageTime: newMessage.time
-    });
+    };
 
+    setSelectedChat(updatedSession);
     setChatSessions(prev => 
       prev.map(session => 
-        session.userId === selectedChat.userId 
-          ? { ...session, messages: updatedMessages, lastMessage: newMessage.text, lastMessageTime: newMessage.time }
-          : session
+        session.userId === selectedChat.userId ? updatedSession : session
       )
     );
-
     setReplyMessage("");
   };
 
@@ -103,162 +92,139 @@ export function SupportPage() {
   const totalUnread = chatSessions.reduce((sum, session) => sum + session.unreadCount, 0);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 font-sans">
       {/* Header */}
-      <div className="bg-white border-b shadow-sm">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link to="/admin">
-                <Button variant="outline" size="icon">
-                  <ArrowLeft className="w-4 h-4" />
-                </Button>
-              </Link>
-              <div>
-                <h1 className="text-3xl font-bold" style={{ color: '#2563eb' }}>
-                  Hỗ Trợ Khách Hàng
-                </h1>
-                <p className="text-gray-600 mt-1">
-                  {totalUnread} tin nhắn chưa đọc
-                </p>
-              </div>
-            </div>
+      <header className="bg-white border-b shadow-sm sticky top-0 z-10">
+        <div className="container mx-auto px-4 py-4 flex items-center gap-4">
+          <Link to="/admin" className="p-2 border rounded-full hover:bg-gray-100 transition-colors">
+            <ArrowLeft className="w-5 h-5 text-gray-600" />
+          </Link>
+          <div>
+            <h1 className="text-2xl font-bold text-blue-600">Hỗ Trợ Khách Hàng</h1>
+            <p className="text-sm text-gray-500">{totalUnread} tin nhắn mới</p>
           </div>
         </div>
-      </div>
+      </header>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-200px)]">
-          {/* Chat List */}
-          <Card className="lg:col-span-1">
-            <CardHeader>
-              <CardTitle className="text-lg">Danh sách chat</CardTitle>
-              <div className="relative mt-2">
+      <main className="container mx-auto px-4 py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-160px)]">
+          
+          {/* Chat List Area */}
+          <div className="bg-white border rounded-xl overflow-hidden shadow-sm flex flex-col lg:col-span-1">
+            <div className="p-4 border-b">
+              <h2 className="font-semibold mb-3">Danh sách chat</h2>
+              <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <Input
+                <input
+                  type="text"
                   placeholder="Tìm kiếm..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9 h-9"
+                  className="w-full pl-10 pr-4 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
-            </CardHeader>
-            <CardContent className="p-0">
-              <ScrollArea className="h-[calc(100vh-360px)]">
-                <div className="divide-y">
-                  {filteredSessions.map((session) => (
+            </div>
+            <div className="flex-1 overflow-y-auto">
+              {filteredSessions.map((session) => (
+                <div
+                  key={session.userId}
+                  onClick={() => setSelectedChat(session)}
+                  className={`p-4 cursor-pointer border-b last:border-b-0 hover:bg-gray-50 transition-colors ${
+                    selectedChat?.userId === session.userId ? "bg-blue-50 border-l-4 border-l-blue-600" : ""
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center flex-shrink-0">
+                      <User className="w-5 h-5" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="font-medium text-sm truncate">{session.userName}</p>
+                        <span className="text-[10px] text-gray-400">{session.lastMessageTime}</span>
+                      </div>
+                      <p className="text-xs text-gray-500 truncate">{session.lastMessage}</p>
+                    </div>
+                    {session.unreadCount > 0 && (
+                      <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                        {session.unreadCount}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Chat Window Area */}
+          <div className="bg-white border rounded-xl overflow-hidden shadow-sm flex flex-col lg:col-span-2">
+            {selectedChat ? (
+              <>
+                <div className="p-4 border-b flex items-center gap-3 bg-white">
+                  <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center">
+                    <User className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-sm">{selectedChat.userName}</h3>
+                    <span className="text-[10px] text-green-500">Đang trực tuyến</span>
+                  </div>
+                </div>
+
+                <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+                  {selectedChat.messages.map((message) => (
                     <div
-                      key={session.userId}
-                      onClick={() => setSelectedChat(session)}
-                      className={`p-4 cursor-pointer hover:bg-gray-50 transition-colors ${
-                        selectedChat?.userId === session.userId ? "bg-blue-50" : ""
-                      }`}
+                      key={message.id}
+                      className={`flex ${message.sender === 'staff' ? 'justify-end' : 'justify-start'}`}
                     >
-                      <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 rounded-full bg-[#2563eb] text-white flex items-center justify-center flex-shrink-0">
-                          <User className="w-5 h-5" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between mb-1">
-                            <p className="font-medium text-sm truncate">{session.userName}</p>
-                            <span className="text-xs text-gray-500">{session.lastMessageTime}</span>
-                          </div>
-                          <p className="text-xs text-gray-600 truncate">{session.lastMessage}</p>
-                        </div>
-                        {session.unreadCount > 0 && (
-                          <Badge className="bg-red-600 h-5 min-w-5 flex items-center justify-center text-xs">
-                            {session.unreadCount}
-                          </Badge>
-                        )}
+                      <div
+                        className={`max-w-[75%] rounded-2xl px-4 py-2 shadow-sm ${
+                          message.sender === 'staff'
+                            ? 'bg-blue-600 text-white rounded-tr-none'
+                            : 'bg-white text-gray-800 border rounded-tl-none'
+                        }`}
+                      >
+                        <p className="text-sm">{message.text}</p>
+                        <p className={`text-[10px] mt-1 text-right ${
+                          message.sender === 'staff' ? 'text-blue-100' : 'text-gray-400'
+                        }`}>
+                          {message.time}
+                        </p>
                       </div>
                     </div>
                   ))}
-                  {filteredSessions.length === 0 && (
-                    <div className="p-8 text-center text-gray-500 text-sm">
-                      Không có cuộc trò chuyện nào
-                    </div>
-                  )}
+                  <div ref={messagesEndRef} />
                 </div>
-              </ScrollArea>
-            </CardContent>
-          </Card>
 
-          {/* Chat Window */}
-          <Card className="lg:col-span-2">
-            {selectedChat ? (
-              <>
-                <CardHeader className="border-b">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-[#2563eb] text-white flex items-center justify-center">
-                      <User className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-lg">{selectedChat.userName}</CardTitle>
-                      <p className="text-xs text-gray-500">ID: {selectedChat.userId}</p>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-0 flex flex-col h-[calc(100vh-360px)]">
-                  {/* Messages */}
-                  <ScrollArea className="flex-1 p-4">
-                    <div className="space-y-4">
-                      {selectedChat.messages.map((message) => (
-                        <div
-                          key={message.id}
-                          className={`flex ${message.sender === 'staff' ? 'justify-end' : 'justify-start'}`}
-                        >
-                          <div
-                            className={`max-w-[70%] rounded-lg p-3 ${
-                              message.sender === 'staff'
-                                ? 'bg-[#2563eb] text-white'
-                                : 'bg-gray-100 text-gray-900'
-                            }`}
-                          >
-                            <p className="text-sm">{message.text}</p>
-                            <p className={`text-xs mt-1 ${
-                              message.sender === 'staff' ? 'text-blue-100' : 'text-gray-500'
-                            }`}>
-                              {message.time}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                      <div ref={messagesEndRef} />
-                    </div>
-                  </ScrollArea>
-
-                  {/* Reply Input */}
-                  <div className="p-4 border-t">
-                    <div className="flex gap-2">
-                      <Input
-                        value={replyMessage}
-                        onChange={(e) => setReplyMessage(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && handleSendReply()}
-                        placeholder="Nhập phản hồi..."
-                        className="flex-1"
-                      />
-                      <Button
-                        onClick={handleSendReply}
-                        className="bg-[#2563eb] hover:bg-[#1d4ed8]"
-                      >
-                        <Send className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
+                <div className="p-4 border-t bg-white">
+                  <form 
+                    onSubmit={(e) => { e.preventDefault(); handleSendReply(); }} 
+                    className="flex gap-2"
+                  >
+                    <input
+                      type="text"
+                      value={replyMessage}
+                      onChange={(e) => setReplyMessage(e.target.value)}
+                      placeholder="Nhập phản hồi..."
+                      className="flex-1 border rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <button
+                      type="submit"
+                      className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition-colors"
+                    >
+                      <Send className="w-5 h-5" />
+                    </button>
+                  </form>
+                </div>
               </>
             ) : (
-              <CardContent className="p-12 text-center">
-                <div className="text-gray-400">
-                  <User className="w-16 h-16 mx-auto mb-4" />
-                  <p className="text-lg">Chọn một cuộc trò chuyện để bắt đầu</p>
-                </div>
-              </CardContent>
+              <div className="flex-1 flex flex-col items-center justify-center text-gray-400">
+                <User className="w-20 h-20 mb-4 opacity-20" />
+                <p className="text-sm">Chọn một cuộc trò chuyện từ danh sách để bắt đầu</p>
+              </div>
             )}
-          </Card>
+          </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

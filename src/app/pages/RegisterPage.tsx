@@ -1,12 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { Eye, EyeOff, Lock, Mail, User as UserIcon, Phone, ArrowLeft } from "lucide-react";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
-import { Checkbox } from "../components/ui/checkbox";
-import { ImageWithFallback } from "../components/figma/ImageWithFallback";
-import { toast } from "sonner";
+import { ImageFallback } from "../components/ImageFallback";
 
 export function RegisterPage() {
   const navigate = useNavigate();
@@ -34,32 +29,32 @@ export function RegisterPage() {
 
     // Validation
     if (!formData.fullName || !formData.email || !formData.phone || !formData.password || !formData.confirmPassword) {
-      toast.error("Vui lòng nhập đầy đủ thông tin");
+      console.log("Vui lòng nhập đầy đủ thông tin");
       return;
     }
 
     if (!formData.email.includes("@")) {
-      toast.error("Email không hợp lệ");
+      console.log("Email không hợp lệ");
       return;
     }
 
     if (formData.phone.length < 10) {
-      toast.error("Số điện thoại không hợp lệ");
+      console.log("Số điện thoại không hợp lệ");
       return;
     }
 
     if (formData.password.length < 6) {
-      toast.error("Mật khẩu phải có ít nhất 6 ký tự");
+      console.log("Mật khẩu phải có ít nhất 6 ký tự");
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      toast.error("Mật khẩu xác nhận không khớp");
+      console.log("Mật khẩu xác nhận không khớp");
       return;
     }
 
     if (!agreeTerms) {
-      toast.error("Vui lòng đồng ý với điều khoản dịch vụ");
+      console.log("Vui lòng đồng ý với điều khoản dịch vụ");
       return;
     }
 
@@ -68,16 +63,16 @@ export function RegisterPage() {
     // Giả lập API call
     setTimeout(() => {
       setIsLoading(false);
-      toast.success("Đăng ký thành công! Chào mừng bạn đến với TravelVN");
+      console.log("Đăng ký thành công! Chào mừng bạn đến với TravelVN");
       localStorage.setItem("isLoggedIn", "true");
       navigate("/");
     }, 1500);
   };
 
   const handleSocialRegister = (provider: string) => {
-    toast.info(`Đang kết nối với ${provider}...`);
+    console.log(`Đang kết nối với ${provider}...`);
     setTimeout(() => {
-      toast.success(`Đăng ký ${provider} thành công!`);
+      console.log(`Đăng ký ${provider} thành công!`);
       localStorage.setItem("isLoggedIn", "true");
       navigate("/");
     }, 1500);
@@ -88,7 +83,7 @@ export function RegisterPage() {
       <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-0 bg-white rounded-2xl shadow-2xl overflow-hidden">
         {/* Left Side - Image */}
         <div className="hidden lg:block relative">
-          <ImageWithFallback
+          <ImageFallback
             src="https://images.unsplash.com/photo-1693282815546-f7eeb0fa909b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwaHUlMjBxdW9jJTIwaXNsYW5kJTIwYmVhY2h8ZW58MXx8fHwxNzcyNDIyMDA3fDA&ixlib=rb-4.1.0&q=80&w=1080"
             alt="Travel Vietnam"
             className="w-full h-full object-cover"
@@ -134,10 +129,9 @@ export function RegisterPage() {
 
           {/* Social Register */}
           <div className="space-y-3 mb-6">
-            <Button
+            <button
               type="button"
-              variant="outline"
-              className="w-full h-11 border-2 hover:bg-gray-50"
+              className="w-full h-11 border-2 border-gray-300 hover:bg-gray-50 rounded px-4 flex items-center justify-center"
               onClick={() => handleSocialRegister("Google")}
             >
               <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -159,18 +153,17 @@ export function RegisterPage() {
                 />
               </svg>
               Đăng ký với Google
-            </Button>
-            <Button
+            </button>
+            <button
               type="button"
-              variant="outline"
-              className="w-full h-11 border-2 hover:bg-gray-50"
+              className="w-full h-11 border-2 border-gray-300 hover:bg-gray-50 rounded px-4 flex items-center justify-center"
               onClick={() => handleSocialRegister("Facebook")}
             >
               <svg className="w-5 h-5 mr-2 text-[#1877F2]" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
               </svg>
               Đăng ký với Facebook
-            </Button>
+            </button>
           </div>
 
           {/* Divider */}
@@ -187,17 +180,17 @@ export function RegisterPage() {
           <form onSubmit={handleRegister} className="space-y-4">
             {/* Full Name */}
             <div>
-              <Label htmlFor="fullName">Họ và tên</Label>
+              <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">Họ và tên</label>
               <div className="relative mt-1">
                 <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <Input
+                <input
                   id="fullName"
                   name="fullName"
                   type="text"
                   placeholder="Nguyễn Văn A"
                   value={formData.fullName}
                   onChange={handleChange}
-                  className="pl-10 h-11"
+                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent h-11"
                   disabled={isLoading}
                 />
               </div>
@@ -205,17 +198,17 @@ export function RegisterPage() {
 
             {/* Email */}
             <div>
-              <Label htmlFor="email">Email</Label>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
               <div className="relative mt-1">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <Input
+                <input
                   id="email"
                   name="email"
                   type="email"
                   placeholder="example@email.com"
                   value={formData.email}
                   onChange={handleChange}
-                  className="pl-10 h-11"
+                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent h-11"
                   disabled={isLoading}
                 />
               </div>
@@ -223,17 +216,17 @@ export function RegisterPage() {
 
             {/* Phone */}
             <div>
-              <Label htmlFor="phone">Số điện thoại</Label>
+              <label htmlFor="phone" className="block text-sm font-medium text-gray-700">Số điện thoại</label>
               <div className="relative mt-1">
                 <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <Input
+                <input
                   id="phone"
                   name="phone"
                   type="tel"
                   placeholder="0912345678"
                   value={formData.phone}
                   onChange={handleChange}
-                  className="pl-10 h-11"
+                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent h-11"
                   disabled={isLoading}
                 />
               </div>
@@ -241,17 +234,17 @@ export function RegisterPage() {
 
             {/* Password */}
             <div>
-              <Label htmlFor="password">Mật khẩu</Label>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">Mật khẩu</label>
               <div className="relative mt-1">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <Input
+                <input
                   id="password"
                   name="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
                   value={formData.password}
                   onChange={handleChange}
-                  className="pl-10 pr-10 h-11"
+                  className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent h-11"
                   disabled={isLoading}
                 />
                 <button
@@ -270,17 +263,17 @@ export function RegisterPage() {
 
             {/* Confirm Password */}
             <div>
-              <Label htmlFor="confirmPassword">Xác nhận mật khẩu</Label>
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">Xác nhận mật khẩu</label>
               <div className="relative mt-1">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <Input
+                <input
                   id="confirmPassword"
                   name="confirmPassword"
                   type={showConfirmPassword ? "text" : "password"}
                   placeholder="••••••••"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className="pl-10 pr-10 h-11"
+                  className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent h-11"
                   disabled={isLoading}
                 />
                 <button
@@ -299,14 +292,15 @@ export function RegisterPage() {
 
             {/* Terms Agreement */}
             <div className="flex items-start space-x-2 pt-2">
-              <Checkbox
+              <input
                 id="terms"
+                type="checkbox"
                 checked={agreeTerms}
-                onCheckedChange={(checked) => setAgreeTerms(checked as boolean)}
+                onChange={(e) => setAgreeTerms(e.target.checked)}
                 disabled={isLoading}
-                className="mt-1"
+                className="mt-1 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
               />
-              <Label
+              <label
                 htmlFor="terms"
                 className="text-sm font-normal leading-relaxed cursor-pointer"
               >
@@ -319,13 +313,13 @@ export function RegisterPage() {
                   Chính sách bảo mật
                 </Link>{" "}
                 của TravelVN
-              </Label>
+              </label>
             </div>
 
             {/* Submit Button */}
-            <Button
+            <button
               type="submit"
-              className="w-full h-11 bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-medium"
+              className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isLoading}
             >
               {isLoading ? (
@@ -336,7 +330,7 @@ export function RegisterPage() {
               ) : (
                 "Đăng ký"
               )}
-            </Button>
+            </button>
           </form>
 
           {/* Terms Note */}

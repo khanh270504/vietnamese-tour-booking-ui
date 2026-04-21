@@ -1,8 +1,6 @@
 import { Link } from "react-router";
 import { Calendar, Clock, Heart } from "lucide-react";
-import { Button } from "./ui/button";
-import { Badge } from "./ui/badge";
-import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { ImageFallback } from "./ImageFallback";
 
 interface TourCardProps {
   id: string;
@@ -17,11 +15,11 @@ interface TourCardProps {
 export function TourCard({ id, image, title, duration, price, seatsLeft, departureDate }: TourCardProps) {
   const getStatusBadge = () => {
     if (seatsLeft === 0) {
-      return <Badge variant="destructive">Hết chỗ</Badge>;
+      return <span className="px-2 py-1 text-xs rounded bg-red-500 text-white">Hết chỗ</span>;
     } else if (seatsLeft <= 5) {
-      return <Badge className="bg-orange-500">Sắp hết chỗ</Badge>;
+      return <span className="px-2 py-1 text-xs rounded bg-orange-500 text-white">Sắp hết chỗ</span>;
     } else {
-      return <Badge className="bg-green-500">Còn chỗ</Badge>;
+      return <span className="px-2 py-1 text-xs rounded bg-green-500 text-white">Còn chỗ</span>;
     }
   };
 
@@ -33,7 +31,7 @@ export function TourCard({ id, image, title, duration, price, seatsLeft, departu
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow">
       {/* Image */}
       <div className="relative h-48 overflow-hidden">
-        <ImageWithFallback
+        <ImageFallback
           src={image}
           alt={title}
           className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
@@ -79,9 +77,9 @@ export function TourCard({ id, image, title, duration, price, seatsLeft, departu
             </p>
           </div>
           <Link to={`/tours/${id}`}>
-            <Button className="bg-[#2563eb] hover:bg-[#1d4ed8]">
+            <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
               Xem chi tiết
-            </Button>
+            </button>
           </Link>
         </div>
       </div>

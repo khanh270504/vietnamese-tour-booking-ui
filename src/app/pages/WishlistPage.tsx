@@ -1,7 +1,6 @@
 import { Heart, Trash2 } from "lucide-react";
 import { Link } from "react-router";
-import { Button } from "../components/ui/button";
-import { ImageWithFallback } from "../components/figma/ImageWithFallback";
+import { ImageFallback } from "../components/ImageFallback";
 
 export function WishlistPage() {
   const wishlistTours = [
@@ -57,9 +56,9 @@ export function WishlistPage() {
             Thêm các tour bạn quan tâm vào danh sách yêu thích để dễ dàng theo dõi
           </p>
           <Link to="/tours">
-            <Button className="bg-[#2563eb] hover:bg-[#1d4ed8]">
+            <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
               Khám phá tour ngay
-            </Button>
+            </button>
           </Link>
         </div>
       ) : (
@@ -68,7 +67,7 @@ export function WishlistPage() {
             <div key={tour.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow">
               {/* Image */}
               <div className="relative h-48 overflow-hidden">
-                <ImageWithFallback
+                <ImageFallback
                   src={tour.image}
                   alt={tour.title}
                   className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
@@ -107,17 +106,13 @@ export function WishlistPage() {
 
                 <div className="flex gap-2">
                   <Link to={`/tours/${tour.id}`} className="flex-1">
-                    <Button className="w-full bg-[#2563eb] hover:bg-[#1d4ed8]">
+                    <button className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
                       Xem chi tiết
-                    </Button>
+                    </button>
                   </Link>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="border-red-500 text-red-500 hover:bg-red-50"
-                  >
+                  <button className="border border-red-500 text-red-500 hover:bg-red-50 px-3 py-2 rounded">
                     <Trash2 className="w-4 h-4" />
-                  </Button>
+                  </button>
                 </div>
               </div>
             </div>

@@ -1,6 +1,5 @@
 import { X } from "lucide-react";
 import { useNavigate } from "react-router";
-import { Button } from "./ui/button";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -46,19 +45,18 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
           {/* Actions */}
           <div className="flex gap-3">
-            <Button
+            <button
               onClick={onClose}
-              variant="outline"
-              className="flex-1"
+              className="flex-1 border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded"
             >
               Hủy
-            </Button>
-            <Button
+            </button>
+            <button
               onClick={handleLogin}
-              className="flex-1 bg-[#2563eb] hover:bg-[#1d4ed8]"
+              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
             >
               Đăng nhập
-            </Button>
+            </button>
           </div>
         </div>
       </div>

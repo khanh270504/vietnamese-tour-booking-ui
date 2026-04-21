@@ -1,15 +1,13 @@
 import { useState } from "react";
 import { Filter } from "lucide-react";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { TourCard } from "../components/TourCard";
-import { Slider } from "../components/ui/slider";
 
 export function TourListingPage() {
   const [priceRange, setPriceRange] = useState([0, 50000000]);
   const [sortBy, setSortBy] = useState("newest");
+  const [destination, setDestination] = useState("all");
+  const [departureDate, setDepartureDate] = useState("");
+  const [duration, setDuration] = useState("all");
 
   const tours = [
     {
@@ -113,65 +111,80 @@ export function TourListingPage() {
 
             {/* Destination Filter */}
             <div className="mb-6">
-              <Label className="mb-2 block">Điểm đến</Label>
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Chọn điểm đến" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tất cả</SelectItem>
-                  <SelectItem value="danang">Đà Nẵng</SelectItem>
-                  <SelectItem value="halong">Hạ Long</SelectItem>
-                  <SelectItem value="phuquoc">Phú Quốc</SelectItem>
-                  <SelectItem value="sapa">Sapa</SelectItem>
-                  <SelectItem value="hoian">Hội An</SelectItem>
-                  <SelectItem value="nhatrang">Nha Trang</SelectItem>
-                  <SelectItem value="dalat">Đà Lạt</SelectItem>
-                  <SelectItem value="mientay">Miền Tây</SelectItem>
-                </SelectContent>
-              </Select>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Điểm đến</label>
+              <select
+                value={destination}
+                onChange={(e) => setDestination(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="all">Tất cả</option>
+                <option value="danang">Đà Nẵng</option>
+                <option value="halong">Hạ Long</option>
+                <option value="phuquoc">Phú Quốc</option>
+                <option value="sapa">Sapa</option>
+                <option value="hoian">Hội An</option>
+                <option value="nhatrang">Nha Trang</option>
+                <option value="dalat">Đà Lạt</option>
+                <option value="mientay">Miền Tây</option>
+              </select>
             </div>
 
             {/* Price Range Filter */}
             <div className="mb-6">
-              <Label className="mb-2 block">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Khoảng giá: {priceRange[0].toLocaleString('vi-VN')}₫ - {priceRange[1].toLocaleString('vi-VN')}₫
-              </Label>
-              <Slider
-                value={priceRange}
-                onValueChange={setPriceRange}
-                min={0}
-                max={50000000}
-                step={1000000}
-                className="mt-4"
-              />
+              </label>
+              <div className="mt-4">
+                <input
+                  type="range"
+                  min="0"
+                  max="50000000"
+                  step="1000000"
+                  value={priceRange[0]}
+                  onChange={(e) => setPriceRange([parseInt(e.target.value), priceRange[1]])}
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                />
+                <input
+                  type="range"
+                  min="0"
+                  max="50000000"
+                  step="1000000"
+                  value={priceRange[1]}
+                  onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer mt-2"
+                />
+              </div>
             </div>
 
             {/* Departure Date Filter */}
             <div className="mb-6">
-              <Label className="mb-2 block">Ngày khởi hành</Label>
-              <Input type="date" />
+              <label className="block text-sm font-medium text-gray-700 mb-2">Ngày khởi hành</label>
+              <input
+                type="date"
+                value={departureDate}
+                onChange={(e) => setDepartureDate(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
             </div>
 
             {/* Duration Filter */}
             <div className="mb-6">
-              <Label className="mb-2 block">Số ngày</Label>
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Chọn số ngày" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tất cả</SelectItem>
-                  <SelectItem value="2-3">2-3 ngày</SelectItem>
-                  <SelectItem value="4-5">4-5 ngày</SelectItem>
-                  <SelectItem value="6+">6+ ngày</SelectItem>
-                </SelectContent>
-              </Select>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Số ngày</label>
+              <select
+                value={duration}
+                onChange={(e) => setDuration(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="all">Tất cả</option>
+                <option value="2-3">2-3 ngày</option>
+                <option value="4-5">4-5 ngày</option>
+                <option value="6+">6+ ngày</option>
+              </select>
             </div>
 
-            <Button className="w-full bg-[#2563eb] hover:bg-[#1d4ed8]">
+            <button className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
               Áp dụng
-            </Button>
+            </button>
           </div>
         </aside>
 
@@ -180,17 +193,16 @@ export function TourListingPage() {
           {/* Sort Options */}
           <div className="flex items-center justify-between mb-6 bg-white rounded-lg shadow-md p-4">
             <span className="text-sm text-gray-600">Sắp xếp theo:</span>
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-48">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="newest">Mới nhất</SelectItem>
-                <SelectItem value="price-low">Giá thấp đến cao</SelectItem>
-                <SelectItem value="price-high">Giá cao đến thấp</SelectItem>
-                <SelectItem value="popular">Phổ biến nhất</SelectItem>
-              </SelectContent>
-            </Select>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="w-48 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="newest">Mới nhất</option>
+              <option value="price-low">Giá thấp đến cao</option>
+              <option value="price-high">Giá cao đến thấp</option>
+              <option value="popular">Phổ biến nhất</option>
+            </select>
           </div>
 
           {/* Tour Grid */}
@@ -202,11 +214,11 @@ export function TourListingPage() {
 
           {/* Pagination */}
           <div className="flex justify-center gap-2 mt-8">
-            <Button variant="outline" disabled>Trước</Button>
-            <Button className="bg-[#2563eb] hover:bg-[#1d4ed8]">1</Button>
-            <Button variant="outline">2</Button>
-            <Button variant="outline">3</Button>
-            <Button variant="outline">Sau</Button>
+            <button className="border border-gray-300 text-gray-300 px-4 py-2 rounded cursor-not-allowed">Trước</button>
+            <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">1</button>
+            <button className="border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded">2</button>
+            <button className="border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded">3</button>
+            <button className="border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded">Sau</button>
           </div>
         </div>
       </div>

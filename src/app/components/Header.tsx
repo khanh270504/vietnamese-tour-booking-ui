@@ -1,6 +1,5 @@
 import { Link, useNavigate } from "react-router";
 import { Heart, ShoppingBag, User, Shield } from "lucide-react";
-import { Button } from "./ui/button";
 import { LoginModal } from "./LoginModal";
 import { useState, useEffect } from "react";
 
@@ -91,25 +90,19 @@ export function Header() {
                 {!isLoggedIn ? (
                   <>
                     <Link to="/login">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="border-[#2563eb] text-[#2563eb] hover:bg-[#2563eb] hover:text-white"
-                      >
+                      <button className="border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-3 py-1 text-sm rounded">
                         Đăng nhập
-                      </Button>
+                      </button>
                     </Link>
                     <Link to="/register">
-                      <Button size="sm" className="bg-[#2563eb] hover:bg-[#1d4ed8]">
+                      <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 text-sm rounded">
                         Đăng ký
-                      </Button>
+                      </button>
                     </Link>
                   </>
                 ) : (
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="border-[#2563eb] text-[#2563eb] hover:bg-[#2563eb] hover:text-white"
+                  <button 
+                    className="border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-3 py-1 text-sm rounded"
                     onClick={() => {
                       setIsLoggedIn(false);
                       localStorage.removeItem("isLoggedIn");
@@ -118,7 +111,7 @@ export function Header() {
                     }}
                   >
                     Đăng xuất
-                  </Button>
+                  </button>
                 )}
               </div>
             </div>

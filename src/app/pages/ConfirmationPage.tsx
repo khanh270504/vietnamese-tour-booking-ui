@@ -1,7 +1,6 @@
 import { Link } from "react-router";
 import { CheckCircle2, Calendar, Users, MapPin, Download, Printer } from "lucide-react";
-import { Button } from "../components/ui/button";
-import { ImageWithFallback } from "../components/figma/ImageWithFallback";
+import { ImageFallback } from "../components/ImageFallback";
 
 export function ConfirmationPage() {
   const bookingInfo = {
@@ -53,7 +52,7 @@ export function ConfirmationPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="md:col-span-2">
               <div className="relative h-48 rounded-lg overflow-hidden mb-4">
-                <ImageWithFallback
+                <ImageFallback
                   src="https://images.unsplash.com/photo-1668000018482-a02acf02b22a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoYWxvbmclMjBiYXklMjB2aWV0bmFtfGVufDF8fHx8MTc3MjUxMDc2NHww&ixlib=rb-4.1.0&q=80&w=1080"
                   alt="Tour"
                   className="w-full h-full object-cover"
@@ -181,18 +180,18 @@ export function ConfirmationPage() {
         {/* Action Buttons */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Link to="/profile" className="w-full">
-            <Button variant="outline" className="w-full">
+            <button className="w-full border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded">
               Xem đơn của tôi
-            </Button>
+            </button>
           </Link>
-          <Button variant="outline" className="w-full">
+          <button className="w-full border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded flex items-center justify-center">
             <Download className="w-4 h-4 mr-2" />
             Tải về PDF
-          </Button>
-          <Button variant="outline" className="w-full">
+          </button>
+          <button className="w-full border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded flex items-center justify-center">
             <Printer className="w-4 h-4 mr-2" />
             In đơn hàng
-          </Button>
+          </button>
         </div>
 
         {/* Support Info */}

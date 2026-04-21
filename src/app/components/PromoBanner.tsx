@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { X, Gift, Clock } from "lucide-react";
-import { Button } from "./ui/button";
 import { Link } from "react-router";
 
 export function PromoBanner() {
@@ -104,9 +103,9 @@ export function PromoBanner() {
 
           {/* CTA Button */}
           <Link to="/tours" onClick={handleClose}>
-            <Button className="w-full bg-white text-[#2563eb] hover:bg-gray-100 font-semibold">
+            <button className="w-full bg-white text-blue-600 hover:bg-gray-100 font-semibold px-4 py-2 rounded">
               Khám phá ngay
-            </Button>
+            </button>
           </Link>
         </div>
 

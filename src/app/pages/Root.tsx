@@ -3,7 +3,6 @@ import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { ChatSupport } from "../components/ChatSupport";
 import { ScrollToTop } from "../components/ScrollToTop";
-import { Toaster } from "../components/ui/sonner";
 
 export function Root() {
   return (
@@ -15,7 +14,6 @@ export function Root() {
       <Footer />
       <ChatSupport />
       <ScrollToTop />
-      <Toaster richColors position="top-right" />
     </div>
   );
 }

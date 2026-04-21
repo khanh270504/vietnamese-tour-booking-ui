@@ -1,11 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { Mail, ArrowLeft, CheckCircle2 } from "lucide-react";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
-import { ImageWithFallback } from "../components/figma/ImageWithFallback";
-import { toast } from "sonner";
+import { ImageFallback } from "../components/ImageFallback";
 
 export function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -17,12 +13,12 @@ export function ForgotPasswordPage() {
 
     // Validation
     if (!email) {
-      toast.error("Vui lòng nhập email");
+      console.log("Vui lòng nhập email");
       return;
     }
 
     if (!email.includes("@")) {
-      toast.error("Email không hợp lệ");
+      console.log("Email không hợp lệ");
       return;
     }
 
@@ -32,7 +28,7 @@ export function ForgotPasswordPage() {
     setTimeout(() => {
       setIsLoading(false);
       setIsSuccess(true);
-      toast.success("Email khôi phục đã được gửi!");
+      console.log("Email khôi phục đã được gửi!");
     }, 1500);
   };
 
@@ -53,20 +49,19 @@ export function ForgotPasswordPage() {
           </p>
           <div className="space-y-3">
             <Link to="/login" className="block">
-              <Button className="w-full bg-[#2563eb] hover:bg-[#1d4ed8]">
+              <button className="w-full bg-[#2563eb] hover:bg-[#1d4ed8] text-white px-4 py-2 rounded">
                 Quay lại đăng nhập
-              </Button>
+              </button>
             </Link>
-            <Button
-              variant="outline"
-              className="w-full"
+            <button
+              className="w-full border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded"
               onClick={() => {
                 setIsSuccess(false);
                 setEmail("");
               }}
             >
               Gửi lại email
-            </Button>
+            </button>
           </div>
         </div>
       </div>
@@ -78,7 +73,7 @@ export function ForgotPasswordPage() {
       <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-0 bg-white rounded-2xl shadow-2xl overflow-hidden">
         {/* Left Side - Image */}
         <div className="hidden lg:block relative">
-          <ImageWithFallback
+          <ImageFallback
             src="https://images.unsplash.com/photo-1643030080539-b411caf44c37?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxob2klMjBhbiUyMHZpZXRuYW0lMjBhbmNpZW50JTIwdG93bnxlbnwxfHx8fDE3NzI1MTA3Njd8MA&ixlib=rb-4.1.0&q=80&w=1080"
             alt="Travel Vietnam"
             className="w-full h-full object-cover"
@@ -123,25 +118,25 @@ export function ForgotPasswordPage() {
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email */}
             <div>
-              <Label htmlFor="email">Email</Label>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
               <div className="relative mt-1">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <Input
+                <input
                   id="email"
                   type="email"
                   placeholder="example@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10 h-11"
+                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2563eb] focus:border-transparent h-11"
                   disabled={isLoading}
                 />
               </div>
             </div>
 
             {/* Submit Button */}
-            <Button
+            <button
               type="submit"
-              className="w-full h-11 bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-medium"
+              className="w-full h-11 bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-medium rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isLoading}
             >
               {isLoading ? (
@@ -152,7 +147,7 @@ export function ForgotPasswordPage() {
               ) : (
                 "Gửi hướng dẫn"
               )}
-            </Button>
+            </button>
           </form>
 
           {/* Back to Login */}

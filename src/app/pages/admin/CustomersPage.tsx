@@ -1,16 +1,6 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router";
-import { ArrowLeft, Search, Filter, MoreVertical, Mail, Phone, Calendar, MapPin } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "../../components/ui/dropdown-menu";
-import { Badge } from "../../components/ui/badge";
+import { Link } from "react-router-dom"; // Sửa lại import cho chuẩn
+import { ArrowLeft, Search, MoreVertical, Mail, Phone, Calendar } from "lucide-react";
 
 interface Customer {
   id: string;
@@ -28,9 +18,9 @@ export function CustomersPage() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState<"all" | "active" | "inactive">("all");
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   useEffect(() => {
-    // Load customer data from localStorage
     const chatKeys = Object.keys(localStorage).filter(key => key.startsWith("chat_"));
     const bookings = JSON.parse(localStorage.getItem("bookings") || "[]");
     
@@ -57,154 +47,141 @@ export function CustomersPage() {
 
   const filteredCustomers = customers.filter(customer => {
     const matchesSearch = customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         customer.email.toLowerCase().includes(searchQuery.toLowerCase());
+                          customer.email.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesFilter = filterStatus === "all" || customer.status === filterStatus;
     return matchesSearch && matchesFilter;
   });
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pb-12 font-sans">
       {/* Header */}
-      <div className="bg-white border-b shadow-sm">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link to="/admin">
-                <Button variant="outline" size="icon">
-                  <ArrowLeft className="w-4 h-4" />
-                </Button>
-              </Link>
-              <div>
-                <h1 className="text-3xl font-bold" style={{ color: '#2563eb' }}>
-                  Quản Lý Khách Hàng
-                </h1>
-                <p className="text-gray-600 mt-1">
-                  Tổng số: {filteredCustomers.length} khách hàng
-                </p>
-              </div>
-            </div>
+      <div className="bg-white border-b shadow-sm sticky top-0 z-20">
+        <div className="container mx-auto px-4 py-6 flex items-center gap-4">
+          <Link to="/admin" className="p-2 border rounded-full hover:bg-gray-100 transition-colors">
+            <ArrowLeft className="w-5 h-5 text-gray-600" />
+          </Link>
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-blue-600">Quản Lý Khách Hàng</h1>
+            <p className="text-sm text-gray-500">Tìm thấy {filteredCustomers.length} khách hàng</p>
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
         {/* Search and Filter */}
-        <Card className="mb-6">
-          <CardContent className="p-6">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <Input
-                  placeholder="Tìm kiếm theo tên, email..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  variant={filterStatus === "all" ? "default" : "outline"}
-                  onClick={() => setFilterStatus("all")}
-                  className={filterStatus === "all" ? "bg-[#2563eb]" : ""}
-                >
-                  Tất cả
-                </Button>
-                <Button
-                  variant={filterStatus === "active" ? "default" : "outline"}
-                  onClick={() => setFilterStatus("active")}
-                  className={filterStatus === "active" ? "bg-[#2563eb]" : ""}
-                >
-                  Hoạt động
-                </Button>
-                <Button
-                  variant={filterStatus === "inactive" ? "default" : "outline"}
-                  onClick={() => setFilterStatus("inactive")}
-                  className={filterStatus === "inactive" ? "bg-[#2563eb]" : ""}
-                >
-                  Không hoạt động
-                </Button>
-              </div>
+        <div className="bg-white p-6 rounded-xl border shadow-sm mb-8">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Tìm kiếm theo tên, email..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 text-sm"
+              />
             </div>
-          </CardContent>
-        </Card>
+            <div className="flex bg-gray-100 p-1 rounded-lg">
+              {(['all', 'active', 'inactive'] as const).map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setFilterStatus(s)}
+                  className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
+                    filterStatus === s 
+                    ? "bg-white text-blue-600 shadow-sm" 
+                    : "text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  {s === 'all' ? 'Tất cả' : s === 'active' ? 'Hoạt động' : 'Tạm ngừng'}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
 
         {/* Customers Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredCustomers.map((customer) => (
-            <Card key={customer.id} className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <div className="flex items-start justify-between">
+            <div key={customer.id} className="bg-white rounded-xl border shadow-sm hover:shadow-md transition-shadow relative">
+              <div className="p-6">
+                <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-[#2563eb] text-white flex items-center justify-center font-bold text-lg">
+                    <div className="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-lg shadow-inner">
                       {customer.name.charAt(0)}
                     </div>
                     <div>
-                      <CardTitle className="text-lg">{customer.name}</CardTitle>
-                      <Badge variant={customer.status === "active" ? "default" : "secondary"} className="mt-1">
-                        {customer.status === "active" ? "Hoạt động" : "Không hoạt động"}
-                      </Badge>
+                      <h3 className="font-bold text-gray-800">{customer.name}</h3>
+                      <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold mt-1 ${
+                        customer.status === "active" ? "bg-green-100 text-green-600" : "bg-gray-100 text-gray-500"
+                      }`}>
+                        {customer.status === "active" ? "Đang hoạt động" : "Không hoạt động"}
+                      </span>
                     </div>
                   </div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MoreVertical className="w-4 h-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>Xem chi tiết</DropdownMenuItem>
-                      <DropdownMenuItem>Gửi email</DropdownMenuItem>
-                      <DropdownMenuItem className="text-red-600">Vô hiệu hóa</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-sm">
-                    <Mail className="w-4 h-4 text-gray-400" />
-                    <span className="text-gray-700">{customer.email}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <Phone className="w-4 h-4 text-gray-400" />
-                    <span className="text-gray-700">{customer.phone}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <Calendar className="w-4 h-4 text-gray-400" />
-                    <span className="text-gray-700">Tham gia: {customer.joinDate}</span>
-                  </div>
-                  <div className="border-t pt-3 mt-3">
-                    <div className="grid grid-cols-2 gap-4 text-center">
-                      <div>
-                        <p className="text-2xl font-bold text-[#2563eb]">{customer.totalBookings}</p>
-                        <p className="text-xs text-gray-500">Đơn hàng</p>
+
+                  {/* Manual Dropdown */}
+                  <div className="relative">
+                    <button 
+                      onClick={() => setOpenDropdown(openDropdown === customer.id ? null : customer.id)}
+                      className="p-1.5 hover:bg-gray-100 rounded-full transition-colors text-gray-400"
+                    >
+                      <MoreVertical className="w-5 h-5" />
+                    </button>
+                    
+                    {openDropdown === customer.id && (
+                      <div className="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-xl z-10 py-1 text-sm animate-in fade-in zoom-in duration-200">
+                        <button className="w-full text-left px-4 py-2 hover:bg-gray-50">Xem chi tiết</button>
+                        <button className="w-full text-left px-4 py-2 hover:bg-gray-50">Gửi email</button>
+                        <div className="border-t my-1"></div>
+                        <button className="w-full text-left px-4 py-2 hover:bg-gray-50 text-red-600">Vô hiệu hóa</button>
                       </div>
-                      <div>
-                        <p className="text-2xl font-bold text-green-600">
-                          {(customer.totalSpent / 1000000).toFixed(1)}M
-                        </p>
-                        <p className="text-xs text-gray-500">Tổng chi tiêu</p>
-                      </div>
-                    </div>
+                    )}
                   </div>
-                  {customer.lastBooking !== "Chưa có" && (
-                    <div className="text-xs text-gray-500 text-center pt-2 border-t">
-                      Đặt tour cuối: {customer.lastBooking}
-                    </div>
-                  )}
                 </div>
-              </CardContent>
-            </Card>
+
+                <div className="space-y-3 mb-4">
+                  <div className="flex items-center gap-3 text-sm text-gray-600">
+                    <Mail className="w-4 h-4 text-blue-400" />
+                    <span className="truncate">{customer.email}</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-gray-600">
+                    <Phone className="w-4 h-4 text-green-400" />
+                    <span>{customer.phone}</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-gray-600">
+                    <Calendar className="w-4 h-4 text-orange-400" />
+                    <span>Tham gia: {customer.joinDate}</span>
+                  </div>
+                </div>
+
+                <div className="border-t pt-4 grid grid-cols-2 gap-4">
+                  <div className="text-center">
+                    <p className="text-xl font-bold text-blue-600">{customer.totalBookings}</p>
+                    <p className="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Đơn hàng</p>
+                  </div>
+                  <div className="text-center border-l">
+                    <p className="text-xl font-bold text-green-600">
+                      {(customer.totalSpent / 1000000).toFixed(1)}M
+                    </p>
+                    <p className="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Tổng chi</p>
+                  </div>
+                </div>
+                
+                {customer.lastBooking !== "Chưa có" && (
+                  <p className="text-[10px] text-gray-400 text-center mt-4 italic">
+                    Đặt tour cuối: {customer.lastBooking}
+                  </p>
+                )}
+              </div>
+            </div>
           ))}
         </div>
 
         {filteredCustomers.length === 0 && (
-          <Card>
-            <CardContent className="p-12 text-center">
-              <p className="text-gray-500">Không tìm thấy khách hàng nào</p>
-            </CardContent>
-          </Card>
+          <div className="bg-white p-20 rounded-xl border text-center text-gray-400 shadow-inner">
+            <Search className="w-12 h-12 mx-auto mb-4 opacity-10" />
+            <p>Không tìm thấy khách hàng nào phù hợp với bộ lọc.</p>
+          </div>
         )}
       </div>
     </div>

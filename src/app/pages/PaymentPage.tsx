@@ -1,9 +1,6 @@
 import { useState } from "react";
 import { useParams, Link } from "react-router";
-import { Button } from "../components/ui/button";
-import { Label } from "../components/ui/label";
-import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group";
-import { ImageWithFallback } from "../components/figma/ImageWithFallback";
+import { ImageFallback } from "../components/ImageFallback";
 import { CreditCard, Smartphone, Building2, CheckCircle2, Clock } from "lucide-react";
 
 export function PaymentPage() {
@@ -51,9 +48,9 @@ export function PaymentPage() {
             </div>
           </div>
           <Link to={`/confirmation/${bookingId}`}>
-            <Button className="bg-[#2563eb] hover:bg-[#1d4ed8]">
+            <button className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white px-6 py-3 rounded">
               Xem chi tiết đơn hàng
-            </Button>
+            </button>
           </Link>
         </div>
       </div>
@@ -102,20 +99,26 @@ export function PaymentPage() {
           {/* Payment Methods */}
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-semibold mb-4">Phương thức thanh toán</h2>
-            <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod} className="space-y-4">
+            <div className="space-y-4">
               {/* Bank Transfer */}
               <div className={`border-2 rounded-lg p-4 cursor-pointer transition-colors ${
                 paymentMethod === "bank" ? "border-[#2563eb] bg-blue-50" : "border-gray-200"
-              }`}>
+              }`} onClick={() => setPaymentMethod("bank")}>
                 <div className="flex items-center gap-3">
-                  <RadioGroupItem value="bank" id="bank" />
-                  <Label htmlFor="bank" className="flex items-center gap-3 cursor-pointer flex-1">
+                  <input
+                    type="radio"
+                    value="bank"
+                    checked={paymentMethod === "bank"}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    className="w-4 h-4 text-[#2563eb] focus:ring-[#2563eb]"
+                  />
+                  <label htmlFor="bank" className="flex items-center gap-3 cursor-pointer flex-1">
                     <Building2 className="w-5 h-5" />
                     <div>
                       <p className="font-semibold">Chuyển khoản ngân hàng</p>
                       <p className="text-sm text-gray-600">Chuyển khoản qua tài khoản ngân hàng</p>
                     </div>
-                  </Label>
+                  </label>
                 </div>
                 {paymentMethod === "bank" && (
                   <div className="mt-4 pl-9 space-y-2 text-sm">
@@ -130,44 +133,56 @@ export function PaymentPage() {
               {/* E-Wallet */}
               <div className={`border-2 rounded-lg p-4 cursor-pointer transition-colors ${
                 paymentMethod === "wallet" ? "border-[#2563eb] bg-blue-50" : "border-gray-200"
-              }`}>
+              }`} onClick={() => setPaymentMethod("wallet")}>
                 <div className="flex items-center gap-3">
-                  <RadioGroupItem value="wallet" id="wallet" />
-                  <Label htmlFor="wallet" className="flex items-center gap-3 cursor-pointer flex-1">
+                  <input
+                    type="radio"
+                    value="wallet"
+                    checked={paymentMethod === "wallet"}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    className="w-4 h-4 text-[#2563eb] focus:ring-[#2563eb]"
+                  />
+                  <label htmlFor="wallet" className="flex items-center gap-3 cursor-pointer flex-1">
                     <Smartphone className="w-5 h-5" />
                     <div>
                       <p className="font-semibold">Ví điện tử</p>
                       <p className="text-sm text-gray-600">MoMo, ZaloPay, VNPay</p>
                     </div>
-                  </Label>
+                  </label>
                 </div>
               </div>
 
               {/* Credit Card */}
               <div className={`border-2 rounded-lg p-4 cursor-pointer transition-colors ${
                 paymentMethod === "card" ? "border-[#2563eb] bg-blue-50" : "border-gray-200"
-              }`}>
+              }`} onClick={() => setPaymentMethod("card")}>
                 <div className="flex items-center gap-3">
-                  <RadioGroupItem value="card" id="card" />
-                  <Label htmlFor="card" className="flex items-center gap-3 cursor-pointer flex-1">
+                  <input
+                    type="radio"
+                    value="card"
+                    checked={paymentMethod === "card"}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    className="w-4 h-4 text-[#2563eb] focus:ring-[#2563eb]"
+                  />
+                  <label htmlFor="card" className="flex items-center gap-3 cursor-pointer flex-1">
                     <CreditCard className="w-5 h-5" />
                     <div>
                       <p className="font-semibold">Thẻ tín dụng</p>
                       <p className="text-sm text-gray-600">Visa, Mastercard, JCB</p>
                     </div>
-                  </Label>
+                  </label>
                 </div>
               </div>
-            </RadioGroup>
+            </div>
           </div>
 
           {/* Confirmation Button */}
-          <Button
+          <button
             onClick={handleConfirmPayment}
-            className="w-full bg-[#2563eb] hover:bg-[#1d4ed8] py-6 text-lg"
+            className="w-full bg-[#2563eb] hover:bg-[#1d4ed8] text-white py-6 text-lg rounded"
           >
             Xác nhận thanh toán
-          </Button>
+          </button>
         </div>
 
         {/* Payment Status Sidebar */}
@@ -196,7 +211,7 @@ export function PaymentPage() {
 
             <div className="border-t pt-4 mt-4">
               <div className="relative h-32 rounded-lg overflow-hidden">
-                <ImageWithFallback
+                <ImageFallback
                   src="https://images.unsplash.com/photo-1668000018482-a02acf02b22a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoYWxvbmclMjBiYXklMjB2aWV0bmFtfGVufDF8fHx8MTc3MjUxMDc2NHww&ixlib=rb-4.1.0&q=80&w=1080"
                   alt="Tour"
                   className="w-full h-full object-cover"

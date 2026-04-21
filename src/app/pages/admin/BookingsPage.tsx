@@ -1,26 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { ArrowLeft, Search, Download, Eye } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
-import { Badge } from "../../components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "../../components/ui/table";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../components/ui/select";
-import { toast } from "sonner";
 
 interface Booking {
   id: string;
@@ -92,9 +72,9 @@ export function BookingsPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Link to="/admin">
-                <Button variant="outline" size="icon">
+                <button className="w-10 h-10 border border-gray-300 hover:bg-gray-50 rounded flex items-center justify-center">
                   <ArrowLeft className="w-4 h-4" />
-                </Button>
+                </button>
               </Link>
               <div>
                 <h1 className="text-3xl font-bold" style={{ color: '#2563eb' }}>
@@ -105,10 +85,10 @@ export function BookingsPage() {
                 </p>
               </div>
             </div>
-            <Button className="bg-[#2563eb] hover:bg-[#1d4ed8]">
+            <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded flex items-center">
               <Download className="w-4 h-4 mr-2" />
               Xuất báo cáo
-            </Button>
+            </button>
           </div>
         </div>
       </div>
@@ -117,8 +97,8 @@ export function BookingsPage() {
       <div className="container mx-auto px-4 py-8">
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <Card>
-            <CardContent className="p-6">
+          <div className="bg-white rounded-lg shadow-md">
+            <div className="p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600 mb-1">Doanh thu</p>
@@ -127,28 +107,28 @@ export function BookingsPage() {
                   </p>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6">
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow-md">
+            <div className="p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600 mb-1">Đã xác nhận</p>
-                  <p className="text-2xl font-bold text-[#2563eb]">{confirmedBookings}</p>
+                  <p className="text-2xl font-bold text-blue-600">{confirmedBookings}</p>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6">
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow-md">
+            <div className="p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600 mb-1">Chờ xử lý</p>
                   <p className="text-2xl font-bold text-yellow-600">{pendingBookings}</p>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
         {/* Search and Filter */}

@@ -1,10 +1,6 @@
 import { useState } from "react";
 import { Search, Calendar, Users, MapPin, CreditCard } from "lucide-react";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
-import { Badge } from "../components/ui/badge";
-import { ImageWithFallback } from "../components/figma/ImageWithFallback";
+import { ImageFallback } from "../components/ImageFallback";
 
 export function LookupPage() {
   const [orderId, setOrderId] = useState("");
@@ -53,32 +49,34 @@ export function LookupPage() {
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
-              <Label htmlFor="orderId">Mã đơn hàng *</Label>
-              <Input
+              <label htmlFor="orderId" className="block text-sm font-medium text-gray-700 mb-1">Mã đơn hàng *</label>
+              <input
                 id="orderId"
                 value={orderId}
                 onChange={(e) => setOrderId(e.target.value)}
                 placeholder="VD: TRV2026030001"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
             <div>
-              <Label htmlFor="email">Email *</Label>
-              <Input
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+              <input
                 id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="example@email.com"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
           </div>
-          <Button
+          <button
             onClick={handleLookup}
-            className="w-full bg-[#2563eb] hover:bg-[#1d4ed8]"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded flex items-center justify-center"
           >
             <Search className="w-4 h-4 mr-2" />
             Tra cứu
-          </Button>
+          </button>
           <p className="text-xs text-gray-500 mt-3 text-center">
             Mẹo: Thử mã "TRV2026030001" với bất kỳ email nào để xem kết quả mẫu
           </p>
@@ -96,9 +94,9 @@ export function LookupPage() {
                   </h2>
                   <p className="text-gray-600">Ngày đặt: 03/03/2026</p>
                 </div>
-                <Badge className="bg-green-500 text-lg px-4 py-2">
+                <span className="bg-green-500 text-white text-lg px-4 py-2 rounded">
                   Đã xác nhận
-                </Badge>
+                </span>
               </div>
             </div>
 
@@ -108,7 +106,7 @@ export function LookupPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="md:col-span-2">
                   <div className="relative h-48 rounded-lg overflow-hidden mb-4">
-                    <ImageWithFallback
+                    <ImageFallback
                       src={bookingDetails.tourImage}
                       alt="Tour"
                       className="w-full h-full object-cover"
@@ -223,12 +221,11 @@ export function LookupPage() {
 
             {/* Actions */}
             <div className="bg-white rounded-lg shadow-md p-6">
-              <Button
-                variant="destructive"
-                className="w-full"
+              <button
+                className="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
               >
                 Hủy đơn
-              </Button>
+              </button>
               <p className="text-xs text-gray-500 mt-3 text-center">
                 Lưu ý: Việc hủy đơn sẽ áp dụng theo chính sách hủy tour
               </p>

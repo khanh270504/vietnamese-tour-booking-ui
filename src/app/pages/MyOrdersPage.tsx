@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { Package, Calendar, Users, DollarSign, MapPin, Phone, Mail } from "lucide-react";
-import { Button } from "../components/ui/button";
 import { LoginModal } from "../components/LoginModal";
 
 export function MyOrdersPage() {
@@ -95,9 +94,12 @@ export function MyOrdersPage() {
           <p className="text-gray-600 mb-6">
             Bạn chưa đặt tour nào. Khám phá các tour hấp dẫn ngay!
           </p>
-          <Button className="bg-[#2563eb] hover:bg-[#1d4ed8]">
+          <button
+            onClick={() => navigate("/tours")}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+          >
             Khám phá tour
-          </Button>
+          </button>
         </div>
       ) : (
         <div className="space-y-6">
@@ -170,19 +172,13 @@ export function MyOrdersPage() {
 
                 {/* Actions */}
                 <div className="flex gap-3 pt-4 border-t">
-                  <Button
-                    variant="outline"
-                    className="flex-1 border-[#2563eb] text-[#2563eb] hover:bg-blue-50"
-                  >
+                  <button className="flex-1 border border-blue-600 text-blue-600 hover:bg-blue-50 px-4 py-2 rounded">
                     Xem chi tiết
-                  </Button>
+                  </button>
                   {order.status === "confirmed" && (
-                    <Button
-                      variant="outline"
-                      className="flex-1 border-red-500 text-red-500 hover:bg-red-50"
-                    >
+                    <button className="flex-1 border border-red-500 text-red-500 hover:bg-red-50 px-4 py-2 rounded">
                       Hủy tour
-                    </Button>
+                    </button>
                   )}
                 </div>
               </div>

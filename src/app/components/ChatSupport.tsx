@@ -1,7 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { MessageCircle, X, Send } from "lucide-react";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
 
 interface Message {
   id: string;
@@ -137,20 +135,20 @@ export function ChatSupport() {
           {/* Input */}
           <div className="p-4 border-t">
             <div className="flex gap-2">
-              <Input
+              <input
+                type="text"
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSend()}
                 placeholder="Nhập nội dung..."
-                className="flex-1"
+                className="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
-              <Button
+              <button
                 onClick={handleSend}
-                size="icon"
-                className="bg-[#2563eb] hover:bg-[#1d4ed8]"
+                className="w-10 h-10 bg-blue-600 hover:bg-blue-700 text-white rounded flex items-center justify-center"
               >
                 <Send className="w-4 h-4" />
-              </Button>
+              </button>
             </div>
           </div>
         </div>
