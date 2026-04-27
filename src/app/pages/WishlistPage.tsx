@@ -1,5 +1,5 @@
 import { Heart, Trash2 } from "lucide-react";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 
 
 export function WishlistPage() {

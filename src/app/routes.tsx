@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter } from "react-router-dom";
 import { Root } from "./pages/Root";
 import { HomePage } from "./pages/HomePage";
 import { TourListingPage } from "./pages/TourListingPage";
@@ -14,31 +14,50 @@ import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
 import { NotFound } from "./pages/NotFound";
-
-import { AdminRoute } from "./components/AdminRoute";
+import { ProtectedRoute } from "./components/guard/ProtectedRoute"; // File check Role
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    Component: Root,
+    element: <Root />,
     children: [
-      { index: true, Component: HomePage },
-      { path: "tours", Component: TourListingPage },
-      { path: "tours/:id", Component: TourDetailPage },
-      { path: "booking/:id", Component: BookingPage },
-      { path: "payment/:bookingId", Component: PaymentPage },
-      { path: "confirmation/:bookingId", Component: ConfirmationPage },
-      { path: "lookup", Component: LookupPage },
-      { path: "my-orders", Component: MyOrdersPage },
-      { path: "wishlist", Component: WishlistPage },
-      { path: "profile", Component: ProfilePage },
-      { path: "*", Component: NotFound },
+      // 🟢 NHÁNH 1: PUBLIC (Ai cũng vào được, không cần check Role)
+      { index: true, element: <HomePage /> },
+      { path: "tours", element: <TourListingPage /> },
+      { path: "tours/:id", element: <TourDetailPage /> },
+      { path: "lookup", element: <LookupPage /> },
+      
+      // 🟡 NHÁNH 2: CUSTOMER (Dùng ROLE để tách, chỉ khách đã đăng nhập mới được vào)
+      {
+        element: <ProtectedRoute allowedRoles={["ROLE_USER", "CUSTOMER"]} />,
+        children: [
+          { path: "booking/:id", element: <BookingPage /> },
+          { path: "payment/:bookingId", element: <PaymentPage /> },
+          { path: "confirmation/:bookingId", element: <ConfirmationPage /> },
+          { path: "my-orders", element: <MyOrdersPage /> },
+          { path: "wishlist", element: <WishlistPage /> },
+          { path: "profile", element: <ProfilePage /> },
+        ]
+      },
+      
+      { path: "*", element: <NotFound /> },
     ],
   },
-  // Auth pages without header/footer
-  { path: "login", Component: LoginPage },
-  { path: "register", Component: RegisterPage },
-  { path: "forgot-password", Component: ForgotPasswordPage },
-  // Admin routes
-  
+
+  // ⚪ NHÁNH 3: AUTH (Trang đăng nhập trắng trơn, không có Root)
+  { path: "login", element: <LoginPage /> },
+  { path: "register", element: <RegisterPage /> },
+  { path: "forgot-password", element: <ForgotPasswordPage /> },
+
+  // 🔴 NHÁNH 4: ADMIN (Chưa làm nên cứ để comment // theo đúng ý ông giáo)
+  /*
+  {
+    path: "/admin",
+    element: <ProtectedRoute allowedRoles={["ROLE_ADMIN", "ADMIN"]} />,
+    children: [
+      // { index: true, element: <AdminDashboard /> },
+      // { path: "tours", element: <AdminToursPage /> },
+    ],
+  },
+  */
 ]);

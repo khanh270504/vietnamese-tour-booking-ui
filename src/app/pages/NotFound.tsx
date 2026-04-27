@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import { Home, Search } from "lucide-react";
 
 export function NotFound() {
@@ -24,7 +24,8 @@ export function NotFound() {
             <button className="border-[#2563eb] text-[#2563eb] hover:bg-[#2563eb] hover:text-white">
               <Search className="w-4 h-4 mr-2" />
               Tìm tour
-            </button>
+            </button
+            >
           </Link>
         </div>
 

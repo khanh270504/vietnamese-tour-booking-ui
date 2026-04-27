@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Lock, Mail, ArrowLeft, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { authService } from "../services/auth/auth.service"; 
 
 export function LoginPage() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
+  // Đã dùng chuẩn Email theo đúng DTO của ông giáo
+  const [email, setEmail] = useState(""); 
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -15,50 +17,35 @@ export function LoginPage() {
     e.preventDefault();
     
     if (!email || !password) {
-      toast.error("Vui lòng nhập đầy đủ thông tin");
+      toast.error("Vui lòng nhập đầy đủ email và mật khẩu!");
       return;
     }
 
     setIsLoading(true);
 
-    // Giả lập API call
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      await authService.login({ email, password });
       
-      let role = "customer";
-      let name = "Khách hàng";
-      
-      if (email === "admin@travelvn.com" || email.includes("admin")) {
-        role = "admin";
-        name = "Quản trị viên";
-        toast.success("Đăng nhập thành công với quyền Admin!");
+      if (rememberMe) {
+        localStorage.setItem("rememberMe", email);
       } else {
-        toast.success("Chào mừng bạn quay trở lại!");
+        localStorage.removeItem("rememberMe");
       }
-      
-      const userData = {
-        id: Date.now().toString(),
-        email: email,
-        name: name,
-        role: role,
-        loginTime: new Date().toISOString()
-      };
-      
-      localStorage.setItem("isLoggedIn", "true");
-      localStorage.setItem("currentUser", JSON.stringify(userData));
-      if (rememberMe) localStorage.setItem("rememberMe", "true");
-      
-      role === "admin" ? navigate("/admin") : navigate("/");
-    }, 1500);
+
+      toast.success("Đăng nhập thành công!");
+      navigate("/"); 
+
+    } catch (error: any) {
+      console.error("Lỗi đăng nhập:", error);
+      const errorMsg = error.response?.data?.message || "Email hoặc mật khẩu không chính xác!";
+      toast.error(errorMsg);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSocialLogin = (provider: string) => {
-    toast.info(`Đang kết nối với ${provider}...`);
-    setTimeout(() => {
-      toast.success(`Đăng nhập ${provider} thành công!`);
-      localStorage.setItem("isLoggedIn", "true");
-      navigate("/");
-    }, 1500);
+    toast.info(`Tính năng đăng nhập ${provider} đang được phát triển...`);
   };
 
   return (
@@ -86,10 +73,10 @@ export function LoginPage() {
         </div>
 
         {/* Cột phải - Form đăng nhập */}
-        <div className="p-8 lg:p-16 flex flex-col justify-center">
-          <Link to="/" className="inline-flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-blue-600 mb-10 transition-colors group">
+        <div className="p-8 lg:p-16 flex flex-col justify-center relative">
+          <Link to="/" className="inline-flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-blue-600 mb-10 transition-colors group w-fit">
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-            Trang chủ
+            Về trang chủ
           </Link>
 
           <div className="mb-10">
@@ -106,6 +93,7 @@ export function LoginPage() {
           <div className="grid grid-cols-2 gap-4 mb-8">
             <button 
               onClick={() => handleSocialLogin("Google")}
+              type="button"
               className="flex items-center justify-center gap-3 py-3.5 border-2 border-gray-50 rounded-2xl font-bold text-gray-700 hover:bg-gray-50 transition-all active:scale-95 shadow-sm"
             >
               <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5" alt="google" />
@@ -113,6 +101,7 @@ export function LoginPage() {
             </button>
             <button 
               onClick={() => handleSocialLogin("Facebook")}
+              type="button"
               className="flex items-center justify-center gap-3 py-3.5 border-2 border-gray-50 rounded-2xl font-bold text-gray-700 hover:bg-gray-50 transition-all active:scale-95 shadow-sm"
             >
               <img src="https://www.svgrepo.com/show/475647/facebook-color.svg" className="w-5 h-5" alt="fb" />
@@ -135,7 +124,8 @@ export function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="traveler@example.com"
-                  className="w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-transparent rounded-2xl outline-none focus:bg-white focus:border-blue-600 transition-all font-medium"
+                  disabled={isLoading}
+                  className="w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-transparent rounded-2xl outline-none focus:bg-white focus:border-blue-600 transition-all font-medium disabled:opacity-60"
                 />
               </div>
             </div>
@@ -149,12 +139,14 @@ export function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-12 pr-12 py-4 bg-gray-50 border-2 border-transparent rounded-2xl outline-none focus:bg-white focus:border-blue-600 transition-all font-medium"
+                  disabled={isLoading}
+                  className="w-full pl-12 pr-12 py-4 bg-gray-50 border-2 border-transparent rounded-2xl outline-none focus:bg-white focus:border-blue-600 transition-all font-medium disabled:opacity-60"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-600"
+                  disabled={isLoading}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-600 disabled:opacity-60"
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -168,21 +160,27 @@ export function LoginPage() {
                     type="checkbox" 
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
-                    className="peer appearance-none w-5 h-5 border-2 border-gray-200 rounded-lg checked:bg-blue-600 checked:border-blue-600 transition-all cursor-pointer"
+                    disabled={isLoading}
+                    className="peer appearance-none w-5 h-5 border-2 border-gray-200 rounded-lg checked:bg-blue-600 checked:border-blue-600 transition-all cursor-pointer disabled:opacity-60"
                   />
-                  <svg className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="4"><path d="M5 13l4 4L19 7" /></svg>
+                  <svg className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="4"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
                 </div>
                 <span className="text-sm font-bold text-gray-500 group-hover:text-gray-700 transition-colors">Ghi nhớ tôi</span>
               </label>
-              <Link to="/forgot-password" size="sm" className="text-sm font-bold text-blue-600 hover:underline">Quên mật khẩu?</Link>
+              <Link to="/forgot-password" className="text-sm font-bold text-blue-600 hover:underline">Quên mật khẩu?</Link>
             </div>
 
             <button 
               type="submit"
               disabled={isLoading}
-              className="w-full py-4 bg-blue-600 text-white rounded-2xl font-black text-lg hover:bg-blue-700 shadow-xl shadow-blue-100 transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full py-4 bg-blue-600 text-white rounded-2xl font-black text-lg hover:bg-blue-700 shadow-xl shadow-blue-200 transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
             >
-              {isLoading ? <><Loader2 className="w-5 h-5 animate-spin" /> Đang kiểm tra...</> : "ĐĂNG NHẬP NGAY"}
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" /> 
+                  ĐANG KẾT NỐI...
+                </>
+              ) : "ĐĂNG NHẬP NGAY"}
             </button>
           </form>
 

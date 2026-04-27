@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { Package, Calendar, Users, DollarSign, MapPin, Phone, Mail } from "lucide-react";
 import { LoginModal } from "../features/auth/LoginModal";
 

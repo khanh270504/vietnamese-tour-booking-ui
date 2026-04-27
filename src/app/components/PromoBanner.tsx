@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { X, Gift, Clock } from "lucide-react";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 
 export function PromoBanner() {
   const [isVisible, setIsVisible] = useState(false);
