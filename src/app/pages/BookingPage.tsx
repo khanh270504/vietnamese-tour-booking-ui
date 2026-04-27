@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams, Link } from "react-router";
+import { useParams, Link } from "react-router-dom";
 import { Calendar, Users, Trash2, Plus } from "lucide-react";
 
 export function BookingPage() {

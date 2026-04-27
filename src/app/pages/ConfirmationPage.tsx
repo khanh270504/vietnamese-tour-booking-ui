@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import { CheckCircle2, Calendar, Users, MapPin, Download, Printer } from "lucide-react";
 
 export function ConfirmationPage() {

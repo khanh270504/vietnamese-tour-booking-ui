@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams, Link } from "react-router";
+import { useParams, Link } from "react-router-dom";
 import { CreditCard, Smartphone, Building2, CheckCircle2, Clock, Loader2, ChevronRight } from "lucide-react";
 
 export function PaymentPage() {
