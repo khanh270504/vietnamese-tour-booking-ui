@@ -134,4 +134,9 @@ export const tourService = {
         });
         return response.data;
     },
+    getTourSelectList: async (): Promise<any> => {
+        const response = await api.get<any>('/api/v1/tours/select-list');
+        return response.data;
+    },
+    
 };
