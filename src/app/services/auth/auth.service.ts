@@ -80,8 +80,18 @@ export const authService = {
   },
   
   updateProfile: async (data: any): Promise<ApiResponse<any>> => {
-    // Giả định endpoint của ông giáo là /customers/profile hoặc /users/profile
     const response = await api.put<ApiResponse<any>>('/customers/profile', data);
+    return response.data;
+},
+googleLogin: async (token: string) => {
+    
+    const response = await api.post<ApiResponse<AuthenticationResponse>>('/auth/google', { token });
+    
+  
+    if (response.data && response.data.result && response.data.result.token) {
+        localStorage.setItem("access_token", response.data.result.token);
+        
+    }
     return response.data;
 },
 };

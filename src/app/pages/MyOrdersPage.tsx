@@ -1,205 +1,193 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Package, Calendar, Users, DollarSign, MapPin, Phone, Mail } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
+import { Package, Calendar, Users, DollarSign, MapPin, Phone, Mail, Loader2, Info } from "lucide-react";
 import { LoginModal } from "../features/auth/LoginModal";
+import api from "../services/api"; 
+import { toast } from "react-toastify";
 
 export function MyOrdersPage() {
   const navigate = useNavigate();
+  const [orders, setOrders] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(() => {
-    return localStorage.getItem("isLoggedIn") === "true";
-  });
+  
+  // 🎯 Kiểm tra Token thực tế
+  const isLoggedIn = !!localStorage.getItem("token");
 
   useEffect(() => {
-    // Kiểm tra đăng nhập khi component mount
     if (!isLoggedIn) {
       setShowLoginModal(true);
+      setIsLoading(false);
+      return;
     }
+
+    const fetchMyOrders = async () => {
+      try {
+        setIsLoading(true);
+        const response = await api.get("/api/v1/bookings/me");
+        
+        const data = response.data.result || response.data;
+        
+        setOrders(Array.isArray(data) ? data : []);
+      } catch (error: any) {
+        console.error("Lỗi lấy danh sách đơn:", error);
+        if (error.response?.status === 401) {
+            setShowLoginModal(true);
+        } else {
+            toast.error("Không thể tải danh sách đơn hàng.");
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchMyOrders();
   }, [isLoggedIn]);
 
-  const orders = [
-    {
-      id: "VN240305001",
-      tourName: "Tour Đà Nẵng - Hội An - Bà Nà Hills 4N3Đ",
-      date: "20/06/2026",
-      status: "confirmed",
-      statusText: "Đã xác nhận",
-      totalAmount: 14980000,
-      adults: 2,
-      children: 0,
-      contactName: "Nguyễn Văn A",
-      contactPhone: "0912345678",
-      contactEmail: "nguyenvana@email.com"
-    },
-    {
-      id: "VN240228002",
-      tourName: "Tour Phú Quốc Trọn Gói 3N2Đ",
-      date: "25/06/2026",
-      status: "pending",
-      statusText: "Chờ xác nhận",
-      totalAmount: 13980000,
-      adults: 2,
-      children: 0,
-      contactName: "Nguyễn Văn A",
-      contactPhone: "0912345678",
-      contactEmail: "nguyenvana@email.com"
-    },
-  ];
+  // Hàm helper format ngày tháng
+  const formatDate = (dateString: string) => {
+    if (!dateString) return "---";
+    return new Date(dateString).toLocaleDateString('vi-VN');
+  };
 
-  const getStatusColor = (status: string) => {
+  const getStatusInfo = (status: string) => {
     switch (status) {
-      case "confirmed":
-        return "bg-green-100 text-green-700";
-      case "pending":
-        return "bg-yellow-100 text-yellow-700";
-      case "cancelled":
-        return "bg-red-100 text-red-700";
+      case "CONFIRMED":
+        return { label: "Đã xác nhận", color: "bg-green-100 text-green-700" };
+      case "PENDING":
+        return { label: "Chờ thanh toán", color: "bg-orange-100 text-orange-700" };
+      case "COMPLETED":
+        return { label: "Hoàn thành", color: "bg-blue-100 text-blue-700" };
+      case "CANCELLED":
+        return { label: "Đã hủy", color: "bg-red-100 text-red-700" };
       default:
-        return "bg-gray-100 text-gray-700";
+        return { label: status, color: "bg-gray-100 text-gray-700" };
     }
   };
 
-  // Nếu chưa đăng nhập, hiển thị modal và không render nội dung
   if (!isLoggedIn) {
     return (
       <>
-        <LoginModal
-          isOpen={showLoginModal}
-          onClose={() => {
-            setShowLoginModal(false);
-            navigate("/");
-          }}
-        />
-        <div className="container mx-auto px-4 py-8 text-center">
-          <p className="text-gray-600">Vui lòng đăng nhập để xem đơn hàng của bạn</p>
+        <LoginModal isOpen={showLoginModal} onClose={() => { setShowLoginModal(false); navigate("/"); }} />
+        <div className="container mx-auto px-4 py-20 text-center">
+          <Package className="w-20 h-20 text-gray-200 mx-auto mb-4" />
+          <h2 className="text-2xl font-black text-gray-900 mb-2">Yêu cầu đăng nhập</h2>
+          <button onClick={() => setShowLoginModal(true)} className="bg-[#2563eb] text-white px-8 py-3 rounded-xl font-bold">Đăng nhập ngay</button>
         </div>
       </>
     );
   }
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-10 h-10 animate-spin text-blue-600" />
+      </div>
+    );
+  }
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <Package className="w-8 h-8" style={{ color: '#2563eb' }} />
-          <h1 className="text-3xl font-bold">Đơn của tôi</h1>
+    <div className="container mx-auto px-4 py-12 max-w-5xl">
+      <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-3 mb-2">
+            <div className="p-3 bg-blue-50 rounded-2xl"><Package className="w-8 h-8 text-[#2563eb]" /></div>
+            <h1 className="text-4xl font-black text-gray-900">Đơn của tôi</h1>
+          </div>
+          <p className="text-gray-500 ml-1">Chào mừng bạn quay lại!</p>
         </div>
-        <p className="text-gray-600">Quản lý và theo dõi các đơn đặt tour của bạn</p>
+        <Link to="/tours" className="text-blue-600 font-bold hover:underline">Đặt tour mới &rarr;</Link>
       </div>
 
       {orders.length === 0 ? (
-        <div className="bg-white rounded-lg shadow-md p-12 text-center">
-          <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h2 className="text-2xl font-semibold mb-2">Chưa có đơn hàng nào</h2>
-          <p className="text-gray-600 mb-6">
-            Bạn chưa đặt tour nào. Khám phá các tour hấp dẫn ngay!
-          </p>
-          <button className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white py-2 px-4 rounded-md">
-            Khám phá tour
-          </button>
+        <div className="bg-white rounded-[2.5rem] border-2 border-dashed p-16 text-center">
+          <h2 className="text-2xl font-black mb-2">Bạn chưa có đơn hàng nào</h2>
+          <button onClick={() => navigate("/tours")} className="bg-[#2563eb] text-white py-4 px-10 rounded-2xl font-black mt-4">KHÁM PHÁ NGAY</button>
         </div>
       ) : (
-        <div className="space-y-6">
-          {orders.map((order) => (
-            <div key={order.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-              {/* Header */}
-              <div className="bg-gray-50 px-6 py-4 flex items-center justify-between border-b">
-                <div className="flex items-center gap-4">
-                  <div>
-                    <p className="text-sm text-gray-600">Mã đơn hàng</p>
-                    <p className="font-semibold text-lg">{order.id}</p>
-                  </div>
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(order.status)}`}>
-                    {order.statusText}
-                  </span>
-                </div>
-              </div>
-
-              {/* Content */}
-              <div className="p-6">
-                <h3 className="font-semibold text-xl mb-4">{order.tourName}</h3>
-
-                <div className="grid md:grid-cols-2 gap-6 mb-6">
-                  {/* Tour Info */}
-                  <div className="space-y-3">
-                    <div className="flex items-start gap-3">
-                      <Calendar className="w-5 h-5 text-gray-400 mt-0.5" />
-                      <div>
-                        <p className="text-sm text-gray-600">Ngày khởi hành</p>
-                        <p className="font-medium">{order.date}</p>
-                      </div>
+        <div className="grid gap-6">
+          {orders.map((order) => {
+            const status = getStatusInfo(order.status);
+            return (
+              <div key={order.id} className="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all group">
+                <div className="bg-gray-50/50 px-8 py-4 flex flex-wrap items-center justify-between border-b">
+                  <div className="flex items-center gap-6">
+                    <div>
+                      <p className="text-[10px] text-gray-400 font-black uppercase">Mã đơn</p>
+                      <p className="font-black text-gray-900">{order.bookingCode}</p>
                     </div>
-                    <div className="flex items-start gap-3">
-                      <Users className="w-5 h-5 text-gray-400 mt-0.5" />
-                      <div>
-                        <p className="text-sm text-gray-600">Số lượng</p>
-                        <p className="font-medium">
-                          {order.adults} người lớn {order.children > 0 && `, ${order.children} trẻ em`}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <DollarSign className="w-5 h-5 text-gray-400 mt-0.5" />
-                      <div>
-                        <p className="text-sm text-gray-600">Tổng tiền</p>
-                        <p className="font-semibold text-lg" style={{ color: '#2563eb' }}>
-                          {order.totalAmount.toLocaleString('vi-VN')}₫
-                        </p>
-                      </div>
+                    <div className={`px-4 py-1 rounded-full text-[10px] font-black ${status.color}`}>
+                      {status.label}
                     </div>
                   </div>
-
-                  {/* Contact Info */}
-                  <div className="space-y-3 bg-gray-50 p-4 rounded-lg">
-                    <h4 className="font-semibold mb-2">Thông tin liên hệ</h4>
-                    <div className="flex items-center gap-3">
-                      <MapPin className="w-4 h-4 text-gray-400" />
-                      <p className="text-sm">{order.contactName}</p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Phone className="w-4 h-4 text-gray-400" />
-                      <p className="text-sm">{order.contactPhone}</p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Mail className="w-4 h-4 text-gray-400" />
-                      <p className="text-sm">{order.contactEmail}</p>
-                    </div>
+                  <div className="text-right">
+                     <p className="text-[10px] text-gray-400 font-black uppercase">Ngày đặt</p>
+                     <p className="font-bold text-gray-600 text-sm">{formatDate(order.createdAt)}</p>
                   </div>
                 </div>
 
-                {/* Actions */}
-                <div className="flex gap-3 pt-4 border-t">
-                  <button
-                    className="flex-1 border-[#2563eb] text-[#2563eb] hover:bg-blue-50"
-                  >
-                    Xem chi tiết
-                  </button>
-                  {order.status === "confirmed" && (
+                <div className="p-8">
+                  <h3 className="font-black text-2xl text-gray-900 mb-6 leading-tight">
+                    {order.tourNameSnapshot || order.tourName}
+                  </h3>
+
+                  <div className="grid md:grid-cols-2 gap-8 mb-8">
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-4">
+                        <Calendar className="w-5 h-5 text-blue-500" />
+                        <div>
+                          <p className="text-[10px] text-gray-400 font-black uppercase">Khởi hành</p>
+                          <p className="font-bold text-gray-900">{formatDate(order.departureDateSnapshot || order.departureDate)}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <Users className="w-5 h-5 text-blue-500" />
+                        <div>
+                          <p className="text-[10px] text-gray-400 font-black uppercase">Hành khách</p>
+                          <p className="font-bold text-gray-900">{order.passengers?.length || 0} người</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-blue-50/50 p-6 rounded-2xl flex flex-col justify-center">
+                       <p className="text-blue-600 font-black text-xs uppercase mb-1">Tổng tiền</p>
+                       <p className="font-black text-3xl text-blue-700">
+                         {order.totalFinalPrice?.toLocaleString('vi-VN')}₫
+                       </p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t">
                     <button
-                      className="flex-1 border-red-500 text-red-500 hover:bg-red-50"
+                      onClick={() => navigate(`/confirmation/${order.id}`)}
+                      className="flex-1 bg-gray-900 text-white py-4 rounded-2xl font-black hover:bg-black transition-all"
                     >
-                      Hủy tour
+                      XEM CHI TIẾT
                     </button>
-                  )}
+                    {order.status === "PENDING" && (
+                      <button
+                        onClick={() => navigate(`/payment/${order.id}`)}
+                        className="flex-1 bg-blue-600 text-white py-4 rounded-2xl font-black hover:bg-blue-700 shadow-lg"
+                      >
+                        THANH TOÁN NGAY
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
-
-      {/* Info Box */}
-      {orders.length > 0 && (
-        <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <h3 className="font-semibold mb-2">Chính sách hủy tour và hoàn tiền</h3>
-          <ul className="text-sm text-gray-600 space-y-1">
-            <li>• Hủy trước 15 ngày: Hoàn 100% tiền tour</li>
-            <li>• Hủy trước 7-14 ngày: Hoàn 70% tiền tour</li>
-            <li>• Hủy trước 3-6 ngày: Hoàn 50% tiền tour</li>
-            <li>• Hủy trong vòng 2 ngày: Không hoàn tiền</li>
-          </ul>
-        </div>
-      )}
+      
+      {/* Policy Box */}
+      <div className="mt-12 bg-orange-50 border-2 border-orange-100 rounded-[2rem] p-8 flex gap-5">
+          <Info className="w-6 h-6 text-orange-600 mt-1" />
+          <div className="text-sm text-orange-800 font-medium">
+            <h3 className="font-black mb-1">LƯU Ý QUAN TRỌNG</h3>
+            <p>Hệ thống tự động hủy đơn sau 24h nếu chưa thanh toán. Liên hệ 1900 1234 để được hỗ trợ.</p>
+          </div>
+      </div>
     </div>
   );
 }

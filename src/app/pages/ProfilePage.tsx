@@ -17,7 +17,6 @@ export function ProfilePage() {
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState<CustomerProfileResponse | null>(null);
 
-  // 1. 🚀 Khởi tạo: Lấy dữ liệu từ Backend
   useEffect(() => {
     const fetchProfile = async () => {
       try {

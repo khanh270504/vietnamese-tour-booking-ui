@@ -20,3 +20,6 @@ export interface IntrospectRequest {
 export interface IntrospectResponse {
   valid: boolean;
 }
+export interface GoogleLoginRequest {
+  token: string; 
+}

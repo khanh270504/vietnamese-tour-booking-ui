@@ -1,206 +1,75 @@
-import { Link } from "react-router-dom";
-import { CheckCircle2, Calendar, Users, MapPin, Download, Printer } from "lucide-react";
+import { useParams } from "react-router-dom";
+import { Loader2 } from "lucide-react";
+import { useConfirmation } from "../features/confirmation/hooks/useConfirmation";
+import { ConfirmationBanner } from "../features/confirmation/ConfirmationBanner";
+import { TourDetails } from "../features/confirmation/TourDetails";
+import { BookingTimeline } from "../features/confirmation/BookingTimeline";
+import { PassengerTable } from "../features/confirmation/PassengerTable";
+import { PaymentDetails } from "../features/confirmation/PaymentDetails";
+import { ConfirmationActions } from "../features/confirmation/ConfirmationActions";
 
 export function ConfirmationPage() {
-  const bookingInfo = {
-    orderId: "TRV2026030001",
-    status: "confirmed",
-    tourName: "Tour Vịnh Hạ Long - Đảo Cát Bà 3N2Đ",
-    departureDate: "15/06/2026",
-    duration: "3 ngày 2 đêm",
-    pickupLocation: "Hà Nội",
-    passengers: [
-      { name: "Nguyễn Văn A", birthDate: "15/03/1990", gender: "Nam" },
-      { name: "Trần Thị B", birthDate: "20/05/1992", gender: "Nữ" },
-    ],
-    payment: {
-      amount: 11480000,
-      method: "Chuyển khoản ngân hàng",
-      status: "Đã thanh toán",
-      date: "03/03/2026"
-    }
-  };
+  const { bookingId } = useParams();
+  const { bookingInfo, isLoading } = useConfirmation(bookingId);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="flex flex-col items-center gap-4 text-blue-600">
+          <Loader2 className="w-10 h-10 animate-spin" />
+          <p className="font-bold">Đang truy xuất thông tin biên lai...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!bookingInfo) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <p className="font-bold text-red-500">Không tìm thấy thông tin đơn hàng!</p>
+      </div>
+    );
+    
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
-      {/* Success Message */}
-      <div className="max-w-3xl mx-auto mb-8">
-        <div className="bg-green-50 border-2 border-green-500 rounded-lg p-8 text-center">
-          <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-            <CheckCircle2 className="w-12 h-12 text-white" />
-          </div>
-          <h1 className="text-3xl font-bold mb-2" style={{ color: '#2563eb' }}>
-            Đặt tour thành công!
-          </h1>
-          <p className="text-gray-600 mb-4">
-            Cảm ơn bạn đã tin tưởng TravelVN. Chúng tôi đã gửi email xác nhận đến hộp thư của bạn.
-          </p>
-          <div className="inline-flex items-center gap-2 bg-white px-6 py-3 rounded-lg shadow-md">
-            <span className="text-gray-600">Mã đơn hàng:</span>
-            <span className="text-xl font-bold" style={{ color: '#2563eb' }}>
-              {bookingInfo.orderId}
-            </span>
-          </div>
-        </div>
-      </div>
+      {/* 1. Banner Trạng thái */}
+      <ConfirmationBanner status={bookingInfo.status} orderId={bookingInfo.orderId} 
+      />
 
       <div className="max-w-3xl mx-auto space-y-6">
-        {/* Tour Information */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold mb-4">Thông tin tour</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="md:col-span-2">
-              <div className="relative h-48 rounded-lg overflow-hidden mb-4">
-                
-              </div>
-              <h3 className="font-semibold text-lg mb-2">{bookingInfo.tourName}</h3>
-            </div>
-            <div className="flex items-start gap-3">
-              <Calendar className="w-5 h-5 text-gray-400 mt-1" />
-              <div>
-                <p className="text-sm text-gray-600">Ngày khởi hành</p>
-                <p className="font-semibold">{bookingInfo.departureDate}</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <MapPin className="w-5 h-5 text-gray-400 mt-1" />
-              <div>
-                <p className="text-sm text-gray-600">Điểm đón</p>
-                <p className="font-semibold">{bookingInfo.pickupLocation}</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <Users className="w-5 h-5 text-gray-400 mt-1" />
-              <div>
-                <p className="text-sm text-gray-600">Số hành khách</p>
-                <p className="font-semibold">{bookingInfo.passengers.length} người</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <Calendar className="w-5 h-5 text-gray-400 mt-1" />
-              <div>
-                <p className="text-sm text-gray-600">Thời gian</p>
-                <p className="font-semibold">{bookingInfo.duration}</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* 2. Thông tin Tour */}
+        <TourDetails 
+          tourName={bookingInfo.tourName}
+          departureDate={bookingInfo.departureDate}
+          pickupLocation={bookingInfo.pickupLocation}
+          duration={bookingInfo.duration}
+          passengersCount={bookingInfo.passengers.length}
+          
+        />
+        
+        {/* 3. Trạng thái Đơn hàng */}
+        <BookingTimeline 
+          status={bookingInfo.status}
+          createdAt={bookingInfo.createdAt}
+          paymentStatus={bookingInfo.payment.status}
+          paymentDate={bookingInfo.payment.date}
+        />
 
-        {/* Booking Status */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold mb-4">Trạng thái đơn</h2>
-          <div className="space-y-4">
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                <CheckCircle2 className="w-6 h-6 text-green-600" />
-              </div>
-              <div className="flex-1">
-                <p className="font-semibold">Đơn hàng đã được xác nhận</p>
-                <p className="text-sm text-gray-600">03/03/2026 10:30</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                <CheckCircle2 className="w-6 h-6 text-green-600" />
-              </div>
-              <div className="flex-1">
-                <p className="font-semibold">Thanh toán thành công</p>
-                <p className="text-sm text-gray-600">03/03/2026 10:25</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-                <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
-              </div>
-              <div className="flex-1">
-                <p className="font-semibold text-gray-400">Khởi hành tour</p>
-                <p className="text-sm text-gray-600">15/06/2026</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* 4. Danh sách Hành khách */}
+        <PassengerTable passengers={bookingInfo.passengers} />
 
-        {/* Passenger List */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold mb-4">Danh sách hành khách</h2>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-4 py-3 text-left">STT</th>
-                  <th className="px-4 py-3 text-left">Họ và tên</th>
-                  <th className="px-4 py-3 text-left">Ngày sinh</th>
-                  <th className="px-4 py-3 text-left">Giới tính</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {bookingInfo.passengers.map((passenger, index) => (
-                  <tr key={index}>
-                    <td className="px-4 py-3">{index + 1}</td>
-                    <td className="px-4 py-3 font-semibold">{passenger.name}</td>
-                    <td className="px-4 py-3">{passenger.birthDate}</td>
-                    <td className="px-4 py-3">{passenger.gender}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        {/* 5. Thông tin Thanh toán */}
+        <PaymentDetails 
+          method={bookingInfo.payment.method}
+          statusText={bookingInfo.payment.status}
+          amount={bookingInfo.payment.amount}
+          statusCode={bookingInfo.status}
+        />
 
-        {/* Payment Information */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold mb-4">Thông tin thanh toán</h2>
-          <div className="space-y-3">
-            <div className="flex justify-between">
-              <span className="text-gray-600">Phương thức thanh toán:</span>
-              <span className="font-semibold">{bookingInfo.payment.method}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Ngày thanh toán:</span>
-              <span className="font-semibold">{bookingInfo.payment.date}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Trạng thái:</span>
-              <span className="text-green-600 font-semibold">{bookingInfo.payment.status}</span>
-            </div>
-            <div className="flex justify-between pt-3 border-t">
-              <span className="font-semibold text-lg">Tổng tiền:</span>
-              <span className="text-2xl font-bold" style={{ color: '#2563eb' }}>
-                {bookingInfo.payment.amount.toLocaleString('vi-VN')}₫
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Link to="/profile" className="w-full">
-            <button className="w-full px-4 py-2 border border-gray-300 bg-transparent text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-  Xem đơn của tôi
-</button>
-          </Link>
-          <button className="w-full px-4 py-2 border border-gray-300 bg-transparent text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-            <Download className="w-4 h-4 mr-2" />
-            Tải về PDF
-          </button>
-          <button className="w-full px-4 py-2 border border-gray-300 bg-transparent text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-            <Printer className="w-4 h-4 mr-2" />
-            In đơn hàng
-          </button>
-        </div>
-
-        {/* Support Info */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <h3 className="font-semibold mb-2">Cần hỗ trợ?</h3>
-          <p className="text-sm text-gray-600 mb-3">
-            Nếu bạn có bất kỳ thắc mắc nào về đơn hàng, vui lòng liên hệ với chúng tôi:
-          </p>
-          <div className="space-y-2 text-sm">
-            <p><span className="font-semibold">Hotline:</span> 1900 1234</p>
-            <p><span className="font-semibold">Email:</span> support@travelvn.com</p>
-            <p><span className="font-semibold">Mã đơn hàng:</span> {bookingInfo.orderId}</p>
-          </div>
-        </div>
+        {/* 6. Nút Hành động & Hỗ trợ */}
+        <ConfirmationActions orderId={bookingInfo.orderId} />
       </div>
     </div>
   );
