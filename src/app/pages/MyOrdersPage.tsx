@@ -11,8 +11,9 @@ export function MyOrdersPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [showLoginModal, setShowLoginModal] = useState(false);
   
-  // 🎯 Kiểm tra Token thực tế
-  const isLoggedIn = !!localStorage.getItem("token");
+  // Lấy token hoặc accessToken (phòng hờ 2 luồng login khác nhau)
+const token = localStorage.getItem("token") || localStorage.getItem("access_token");
+const isLoggedIn = !!token;
 
   useEffect(() => {
     if (!isLoggedIn) {

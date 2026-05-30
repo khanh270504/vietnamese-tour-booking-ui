@@ -5,29 +5,53 @@ import { Link } from "react-router-dom";
 export function PromoBanner() {
   const [isVisible, setIsVisible] = useState(false);
   const [timeLeft, setTimeLeft] = useState({
-    hours: 24,
-    minutes: 0,
-    seconds: 0,
+    hours: 23,
+    minutes: 59,
+    seconds: 59,
   });
 
   useEffect(() => {
+    // 1. Kiểm tra xem phiên làm việc này khách đã tắt banner chưa
     const isClosed = sessionStorage.getItem("promoBannerClosed");
     if (!isClosed) {
-      setTimeout(() => setIsVisible(true), 2000);
+      const timer = setTimeout(() => setIsVisible(true), 2000);
+      return () => clearTimeout(timer); // Tránh rò rỉ bộ nhớ nếu user chuyển trang nhanh
     }
+  }, []);
 
+  useEffect(() => {
+    if (!isVisible) return;
+
+    // 2. 🎯 SỬA LẠI LOGIC ĐẾM NGƯỢC CHUẨN ĐÉT
     const interval = setInterval(() => {
       setTimeLeft((prev) => {
         let { hours, minutes, seconds } = prev;
-        if (seconds > 0) seconds--;
-        else if (minutes > 0) { minutes = 59; seconds = 59; hours > 0 && hours--; }
-        else if (hours > 0) { hours--; minutes = 59; seconds = 59; }
+
+        if (hours === 0 && minutes === 0 && seconds === 0) {
+          clearInterval(interval); // Hết giờ thì dừng đếm, không cho chạy âm
+          return prev;
+        }
+
+        if (seconds > 0) {
+          seconds--;
+        } else {
+          seconds = 59;
+          if (minutes > 0) {
+            minutes--;
+          } else {
+            minutes = 59;
+            if (hours > 0) {
+              hours--;
+            }
+          }
+        }
+
         return { hours, minutes, seconds };
       });
     }, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [isVisible]); // Chỉ chạy bộ đếm khi banner thực sự hiển thị
 
   const handleClose = () => {
     setIsVisible(false);
@@ -37,10 +61,10 @@ export function PromoBanner() {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 z-40 w-full max-w-sm">
+    <div className="fixed bottom-4 right-4 z-40 w-full max-w-sm animate-in fade-in slide-in-from-bottom-5 duration-300">
       <div className="bg-gradient-to-br from-[#2563eb] to-[#1d4ed8] rounded-2xl shadow-2xl overflow-hidden border-2 border-white relative">
         
-        {/* Nút đóng (X) thuần HTML */}
+        {/* Nút đóng (X) */}
         <button
           onClick={handleClose}
           className="absolute top-3 right-3 text-white/80 hover:text-white transition-colors z-10"
@@ -50,7 +74,7 @@ export function PromoBanner() {
 
         <div className="p-6">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center animate-bounce">
               <Gift className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -59,8 +83,8 @@ export function PromoBanner() {
             </div>
           </div>
 
-          <p className="text-white/95 text-sm mb-4">
-            Đặt tour ngay hôm nay để nhận ưu đãi độc quyền! Áp dụng trong tháng 6.
+          <p className="text-white/95 text-sm mb-4 leading-relaxed">
+            Đặt tour ngay hôm nay để nhận ưu đãi độc quyền! Áp dụng cho các tour khởi hành trong tháng này.
           </p>
 
           {/* Countdown display */}
@@ -70,22 +94,22 @@ export function PromoBanner() {
             <div className="flex gap-1 ml-auto">
               {[timeLeft.hours, timeLeft.minutes, timeLeft.seconds].map((unit, i) => (
                 <div key={i} className="flex gap-1 items-center">
-                  <div className="bg-white/20 rounded px-2 py-1">
-                    <span className="text-white font-bold text-sm">
+                  <div className="bg-white/20 rounded px-2 py-1 min-w-[2rem] text-center">
+                    <span className="text-white font-black text-sm tabular-nums">
                       {String(unit).padStart(2, "0")}
                     </span>
                   </div>
-                  {i < 2 && <span className="text-white">:</span>}
+                  {i < 2 && <span className="text-white font-bold">:</span>}
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Nút CTA thuần HTML (Bọc trong Link) */}
+          {/* Nút CTA */}
           <Link 
             to="/tours" 
             onClick={handleClose}
-            className="block w-full bg-white text-[#2563eb] hover:bg-gray-100 font-bold text-center py-3 rounded-xl transition-all active:scale-95"
+            className="block w-full bg-white text-[#2563eb] hover:bg-gray-100 font-black text-center py-3 rounded-xl transition-all active:scale-95 shadow-lg"
           >
             Khám phá ngay
           </Link>

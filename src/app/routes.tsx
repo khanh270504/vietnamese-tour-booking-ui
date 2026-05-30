@@ -22,7 +22,7 @@ import { DashboardLayout } from "./management/layout/DashboardLayout";
 import { OverviewPage } from "./management/pages/OverviewPage";
 import { BookingsPage } from "./management/pages/BookingsPage";
 import { TourManagerPage } from "./management/pages/TourManagerPage";
-import { CalendarPage } from "./management/pages/CalendarPage";
+import { CalendarPage } from "./management/pages/CalendarPage.tsx";
 import { CustomersPage } from "./management/pages/CustomersPage";
 import { CRMLeadsPage } from "./management/pages/CRMLeadsPage";
 import { PaymentsPage } from "./management/pages/PaymentsPage";
@@ -32,6 +32,12 @@ import { EmployeesPage } from "./management/pages/EmployeesPage";
 import { ReportsPage } from "./management/pages/ReportsPage";
 import { AutomationPage } from "./management/pages/AutomationPage";
 import { AdvancedAnalyticsPage } from "./management/pages/AdvancedAnalyticsPage";
+import AdminChat from "./management/pages/AdminChat";
+
+// 🎯 IMPORT 3 TRANG MỚI VÀO ĐÂY NÈ SẾP
+import { SuppliersPage } from "./management/pages/SuppliersPage";
+import { MediaLibraryPage } from "./management/pages/MediaLibraryPage";
+import { TicketManagementPage } from "./management/pages/TicketManagementPage";
 
 export const router = createBrowserRouter([
   {
@@ -66,21 +72,21 @@ export const router = createBrowserRouter([
   { path: "forgot-password", element: <ForgotPasswordPage /> },
 
   // 🔴 NHÁNH 4: MANAGEMENT (ADMIN SYSTEM)
-  // Toàn bộ hệ thống quản trị nằm ở đây
   {
     path: "/admin",
-  element: (
-    <ProtectedRoute allowedRoles={["ROLE_ADMIN", "ADMIN", "SALE", "ROLE_SALE"]}>
-      <DashboardLayout />
-    </ProtectedRoute>
-  ),
+    element: (
+      <ProtectedRoute allowedRoles={["ROLE_ADMIN", "ADMIN", "SALE", "ROLE_SALE"]}>
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
     children: [
-      { index: true, element: <OverviewPage /> }, // Trang mặc định khi vào /admin
+      { index: true, element: <OverviewPage /> },
       { path: "bookings", element: <BookingsPage /> },
       { path: "tours", element: <TourManagerPage /> },
       { path: "calendar", element: <CalendarPage /> },
       { path: "customers", element: <CustomersPage /> },
       { path: "crm", element: <CRMLeadsPage /> },
+      { path: "chat", element: <AdminChat /> },
       { path: "payments", element: <PaymentsPage /> },
       { path: "vouchers", element: <VouchersPage /> },
       { path: "reviews", element: <ReviewsPage /> },
@@ -89,6 +95,11 @@ export const router = createBrowserRouter([
       { path: "analytics", element: <AdvancedAnalyticsPage /> },
       { path: "automation", element: <AutomationPage /> },
       { path: "settings", element: <div className="p-8 font-black uppercase">Cài đặt hệ thống (Đang phát triển)</div> },
+      
+      // 🎯 KHAI BÁO 3 ĐƯỜNG DẪN MỚI
+      { path: "suppliers", element: <SuppliersPage /> },
+      { path: "media", element: <MediaLibraryPage /> },
+      { path: "tickets", element: <TicketManagementPage /> },
     ],
   },
 ]);

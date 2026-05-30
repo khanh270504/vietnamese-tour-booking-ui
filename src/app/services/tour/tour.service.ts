@@ -47,6 +47,10 @@ export const tourService = {
         const response = await api.delete<ApiResponse<string>>(`/api/v1/admin/tours/${id}`);
         return response.data;
     },
+        restoreTour: async (id: number): Promise<ApiResponse<string>> => {
+    const response = await api.patch<ApiResponse<string>>(`/api/v1/admin/tours/${id}/restore`);
+    return response.data;
+    },
 
     // ================= SCHEDULE (LỊCH TRÌNH) =================
 
@@ -55,15 +59,12 @@ export const tourService = {
         return response.data;
     },
 
-    // Lấy lịch trình (Client gọi để chọn ngày, Admin gọi để quản lý)
     getSchedulesByTour: async (tourId: number): Promise<ApiResponse<ScheduleResponse[]>> => {
-        // Khớp với @GetMapping("/tours/{id}/schedules")
         const response = await api.get<ApiResponse<ScheduleResponse[]>>(`/api/v1/tours/${tourId}/schedules`);
         return response.data;
     },
 
     updateScheduleStatus: async (id: number, status: string): Promise<ApiResponse<ScheduleResponse>> => {
-        // Khớp với @PatchMapping("/admin/schedules/{id}/status")
         const response = await api.patch<ApiResponse<ScheduleResponse>>(`/api/v1/admin/schedules/${id}/status`, null, {
             params: { status }
         });
@@ -78,7 +79,6 @@ export const tourService = {
     },
 
     getPricingByTour: async (tourId: number): Promise<ApiResponse<PricingConfigResponse[]>> => {
-        // Khớp với @GetMapping("/tours/{id}/pricing")
         const response = await api.get<ApiResponse<PricingConfigResponse[]>>(`/api/v1/tours/${tourId}/pricing`);
         return response.data;
     },
@@ -89,7 +89,6 @@ export const tourService = {
     },
 
     getSurchargesByTour: async (tourId: number): Promise<ApiResponse<SurchargeResponse[]>> => {
-        // Khớp với @GetMapping("/admin/tours/{id}/surcharges")
         const response = await api.get<ApiResponse<SurchargeResponse[]>>(`/api/v1/admin/tours/${tourId}/surcharges`);
         return response.data;
     },
@@ -99,34 +98,15 @@ export const tourService = {
         return response.data;
     },
 
-    // ================= THÔNG TIN BỔ TRỢ =================
+    // ================= THÔNG TIN BỔ TRỢ & TÌM KIẾM =================
 
     getDestinations: async (): Promise<ApiResponse<DestinationResponse[]>> => {
         const response = await api.get<ApiResponse<DestinationResponse[]>>('/api/v1/destinations');
         return response.data;
     },
-    searchTours: async (params: any): Promise<ApiResponse<PageResponse<TourResponse>>> => {
-    const response = await api.get<ApiResponse<PageResponse<TourResponse>>>('/api/v1/tours/search', { 
-      params: params 
-    });
-    return response.data;
-  },
-  createTourImage: async (data: TourImageRequest): Promise<ApiResponse<any>> => {
-        const response = await api.post<ApiResponse<any>>('/api/v1/admin/tours/images', data);
-        return response.data;
-    },
 
-    // Nếu Backend ông giáo hỗ trợ ném cả 1 mảng ảnh lên cùng lúc cho nhanh thì dùng hàm này
-    createMultipleTourImages: async (data: TourImageRequest[]): Promise<ApiResponse<any>> => {
-        const response = await api.post<ApiResponse<any>>('/api/v1/admin/tours/images/batch', data);
-        return response.data;
-    },
-
-    deleteTourImage: async (imageId: number): Promise<ApiResponse<void>> => {
-        const response = await api.delete<ApiResponse<void>>(`/api/v1/admin/tours/images/${imageId}`);
-        return response.data;
-    },
-    searchTour: async (
+    // Đã gộp 2 hàm search lại thành 1 hàm chuẩn type nhất
+    searchTours: async (
         params: TourSearchRequest & { page?: number; size?: number; sortBy?: string }
     ): Promise<ApiResponse<PageResponse<TourResponse>>> => {
         const response = await api.get<ApiResponse<PageResponse<TourResponse>>>('/api/v1/tours/search', { 
@@ -134,9 +114,57 @@ export const tourService = {
         });
         return response.data;
     },
+
     getTourSelectList: async (): Promise<any> => {
         const response = await api.get<any>('/api/v1/tours/select-list');
         return response.data;
     },
-    
+
+    // ================= XỬ LÝ HÌNH ẢNH (Đã fix FormData) =================
+
+    createTourImage: async (data: TourImageRequest): Promise<ApiResponse<string>> => {
+        const formData = new FormData();
+        formData.append("tourId", data.tourId.toString());
+        formData.append("file", data.file); // React phải truyền vào đối tượng File
+
+        const response = await api.post<ApiResponse<string>>('/api/v1/admin/tours/images/upload', formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
+        return response.data;
+    },
+
+    // Hàm dự phòng: Nếu API Backend của sếp nhận "List<MultipartFile> files"
+    createMultipleTourImages: async (tourId: number, files: File[]): Promise<ApiResponse<string[]>> => {
+        const formData = new FormData();
+        formData.append("tourId", tourId.toString());
+        
+        // Ném nhiều file vào cùng 1 key "files"
+        files.forEach((file) => {
+            formData.append("files", file);
+        });
+
+        const response = await api.post<ApiResponse<string[]>>('/api/v1/admin/tours/images/upload-multiple', formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
+        return response.data;
+    },
+    uploadRawImage: async (file: File): Promise<ApiResponse<String>> => {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const response = await api.post<ApiResponse<String>>('/api/v1/admin/tours/images/upload-raw', formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
+        return response.data;
+    },
+    deleteTourImage: async (imageId: number): Promise<ApiResponse<void>> => {
+        const response = await api.delete<ApiResponse<void>>(`/api/v1/admin/tours/images/${imageId}`);
+        return response.data;
+    }
 };

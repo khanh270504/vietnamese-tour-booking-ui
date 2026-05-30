@@ -12,9 +12,10 @@ interface TourCardProps {
 export function TourCard({ tour }: TourCardProps) {
   
   if (!tour) return null;
-
+const MINIO_BASE_URL = import.meta.env.VITE_MINIO_URL || "http://localhost:9000/tours";
   const schedules = tour.schedules || [];
-
+console.log(tour)
+console.log(tour.thumbnail)
   const nextSchedule = schedules
     .filter(s => s.status === "OPENING")
     .sort((a, b) => new Date(a.departureDate).getTime() - new Date(b.departureDate).getTime())[0];
@@ -30,7 +31,8 @@ export function TourCard({ tour }: TourCardProps) {
       {/* --- PHẦN HÌNH ẢNH --- */}
       <div className="relative h-48 overflow-hidden shrink-0">
         <img 
-          src={tour.thumbnail || "https://placehold.co/600x400?text=No+Image"} 
+          // Ghép URL MinIO với filename từ DB
+          src={tour.thumbnail ? `${MINIO_BASE_URL}/${tour.thumbnail}` : "https://placehold.co/600x400?text=No+Image"} 
           alt={tour.name}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
         />

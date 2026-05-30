@@ -1,53 +1,58 @@
-import { Outlet } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
 import { Sidebar } from "./Sidebar"; 
 import { NotificationDropdown } from "../../components/NotificationDropdown";
-import { Search, User } from "lucide-react";
+import { Search, User, LogOut, Settings, Globe, ChevronDown, Menu } from "lucide-react";
 
 export function DashboardLayout() {
+  const [collapsed, setCollapsed] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("access_token");
+    navigate("/login");
+  };
+
   return (
-    <div className="flex min-h-screen bg-slate-50/50">
-      <Sidebar />
+    <div className="flex min-h-screen bg-slate-50/30">
+      <Sidebar collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} isMobileOpen={isMobileOpen} onMobileClose={() => setIsMobileOpen(false)} />
 
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        
-        <header className="h-24 bg-white/80 backdrop-blur-md border-b border-slate-100 flex items-center justify-between px-8 sticky top-0 z-30">
-          
-          {/* Bên trái: Thanh tìm kiếm nhanh */}
-          <div className="relative group w-96">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
-            <input 
-              type="text" 
-              placeholder="Tìm nhanh mã đơn, khách hàng..." 
-              className="w-full pl-12 pr-4 py-3 bg-slate-50 border-transparent rounded-2xl text-xs font-bold outline-none focus:bg-white focus:ring-4 focus:ring-blue-500/5 transition-all"
-            />
+        <header className="h-24 bg-white/80 backdrop-blur-md border-b border-slate-100 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-30">
+          <div className="flex items-center gap-4">
+            <button onClick={() => setIsMobileOpen(true)} className="p-2 text-slate-500 lg:hidden"><Menu size={24} /></button>
+            <div className="relative group hidden sm:block">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <input placeholder="Tìm nhanh..." className="pl-12 pr-4 py-2.5 bg-slate-50 rounded-2xl text-xs font-bold w-64 lg:w-96 outline-none focus:bg-white border-transparent focus:border-blue-100 border transition-all" />
+            </div>
           </div>
 
-          {/* Bên phải: Chuông thông báo + User Profile */}
-          <div className="flex items-center gap-6">
-            
-            {/* 🔔 ĐÂY NÈ ÔNG GIÁO! Nhét nó ở đây */}
+          <div className="flex items-center gap-4">
             <NotificationDropdown />
-
-            <div className="w-px h-8 bg-slate-100 mx-2" /> {/* Vạch ngăn cách */}
-
-            {/* Avatar & Tên Admin */}
-            <div className="flex items-center gap-4 cursor-pointer group">
-              <div className="text-right hidden md:block">
-                <p className="text-sm font-black text-slate-900 leading-tight">Admin Quản trị</p>
-                <p className="text-[10px] font-bold text-blue-500 uppercase tracking-widest">Sếp Tổng</p>
+            <div className="relative">
+              <div onClick={() => setShowUserMenu(!showUserMenu)} className="flex items-center gap-3 cursor-pointer p-1.5 rounded-2xl hover:bg-slate-50 transition-all">
+                <div className="text-right hidden sm:block">
+                  <p className="text-sm font-black text-slate-900 leading-tight">ADMIN</p>
+                  <p className="text-[10px] font-bold text-blue-500 uppercase">Quản trị hệ thống</p>
+                </div>
+                <div className="w-11 h-11 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-100"><User size={20}/></div>
               </div>
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-blue-100 group-hover:scale-105 transition-all">
-                <User size={20} strokeWidth={3} />
-              </div>
+
+              {showUserMenu && (
+                <div className="absolute right-0 mt-3 w-52 bg-white rounded-2xl shadow-2xl border border-slate-100 py-2 z-50">
+                  <button onClick={() => navigate("/")} className="w-full px-4 py-2.5 flex items-center gap-3 text-sm font-bold text-slate-600 hover:bg-blue-50 hover:text-blue-600"><Globe size={16}/> Trang chủ</button>
+                  <button onClick={handleLogout} className="w-full px-4 py-2.5 flex items-center gap-3 text-sm font-black text-rose-500 hover:bg-rose-50"><LogOut size={16}/> Đăng xuất</button>
+                </div>
+              )}
             </div>
           </div>
         </header>
 
-        {/* 3. NỘI DUNG TRANG CON (OVERVIEW, BOOKINGS,...) */}
-        <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
-          <div className="max-w-[1600px] mx-auto">
-            <Outlet />
-          </div>
+        <div className="flex-1 overflow-y-auto p-4 lg:p-8 custom-scrollbar">
+          <div className="max-w-[1600px] mx-auto"><Outlet /></div>
         </div>
       </main>
     </div>

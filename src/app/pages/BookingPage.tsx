@@ -13,6 +13,7 @@ import { VoucherForm } from "../features/booking/VoucherForm";
 import { BookingSummary } from "../features/booking/BookingSummary";
 
 export function BookingPage() {
+  const MINIO_BASE_URL = import.meta.env.VITE_MINIO_URL || "http://localhost:9000/tours";
   const [searchParams] = useSearchParams();
   const scheduleId = searchParams.get("scheduleId"); 
   const navigate = useNavigate();
@@ -27,6 +28,7 @@ export function BookingPage() {
     departureDate: "",
     adultPrice: 0,
     childPrice: 0,
+    thumbnailUrl: "",
     isLoadingData: true
   });
 
@@ -58,16 +60,25 @@ const filteredVouchers = useMemo(() => {
       try {
         const scheduleRes = await api.get(`/api/v1/schedules/${scheduleId}`);
         const d = scheduleRes.data.result || scheduleRes.data;
-        
+        let thumbnail = "";
+        if (d.tourId) {
+          try {
+            const tourRes = await api.get(`/api/v1/tours/${d.tourId}`);
+            thumbnail = tourRes.data.result?.thumbnail || "";
+          } catch (e) {
+            console.error("Không lấy được ảnh tour");
+          }
+        } 
         setScheduleInfo({
-          tourName: d.name || "Tour du lịch",
+          tourName: d.tourName || "Tour du lịch",
           tourId: d.tourId ?? null,
           departureDate: d.departureDate || "",
           adultPrice: d.pricings?.find((p: any) => p.passengerType === "ADULT")?.price || 0,
           childPrice: d.pricings?.find((p: any) => p.passengerType === "CHILD")?.price || 0,
+          thumbnailUrl: thumbnail,
           isLoadingData: false
         });
-        console.log("Schedule info:", d);
+        console.log("Schedule info2:", thumbnail);
         // 2. Fetch Vouchers
         try {
           const vRes = await api.get("/api/v1/vouchers/public/active");
@@ -141,6 +152,7 @@ const filteredVouchers = useMemo(() => {
         </div>
         <div className="lg:col-span-1">
           <BookingSummary 
+            thumbnailUrl={scheduleInfo.thumbnailUrl ? `${MINIO_BASE_URL}/${scheduleInfo.thumbnailUrl}` : undefined}
             tourName={scheduleInfo.tourName} departureDate={scheduleInfo.departureDate}
             numberOfPassengers={numberOfPassengers} totalPrice={totalPrice} 
             discount={discount} finalPrice={finalPrice} 

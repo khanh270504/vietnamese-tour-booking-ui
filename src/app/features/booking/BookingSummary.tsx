@@ -1,7 +1,6 @@
 import { Calendar, Users, Loader2 } from "lucide-react";
 // Đã bỏ Link vì không dùng đến nữa
 
-// 1. Thêm 3 props để nhận data thật của Tour
 interface BookingSummaryProps {
   tourName: string;         
   departureDate: string;    

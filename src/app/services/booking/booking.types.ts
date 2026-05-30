@@ -9,7 +9,14 @@ export interface PassengerRequest {
   passengerType: PassengerType;
   identityNumber?: string; 
 }
-
+export interface PassengerResponse {
+  id: number;
+  fullName: string;
+  passengerType: 'ADULT' | 'CHILD' | string; 
+  gender: string;
+  birthDate: string; 
+  unitPrice: number;
+}
 export interface ContactInfoReq {
   fullName: string;
   phone: string;

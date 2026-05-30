@@ -140,7 +140,7 @@ export function RegisterPage() {
                     type="email"
                     value={formData.email}
                     onChange={handleChange}
-                    placeholder="name@company.com"
+                    placeholder="name@gmail.com"
                     className="w-full pl-14 pr-6 py-4 rounded-2xl border-2 border-gray-50 bg-gray-50/50 outline-none focus:border-blue-500/20 focus:bg-white transition-all font-bold text-gray-900"
                   />
                 </div>

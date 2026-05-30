@@ -111,7 +111,7 @@ export function Hero() {
 
                 <div className="p-3 bg-blue-600 text-center">
                    <p className="text-white text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2">
-                     <Star size={10} className="fill-white" /> Khám phá điểm đến cùng BookingTour
+                     <Star size={10} className="fill-white" /> Khám phá điểm đến cùng TravelVN
                    </p>
                 </div>
               </div>

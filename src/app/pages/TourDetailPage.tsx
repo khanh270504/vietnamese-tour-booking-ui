@@ -31,9 +31,10 @@ export function TourDetailPage() {
     );
   }
 
-  const rawImages = tour.tourImages?.map((img: any) => img.imageUrl) || [];
-  const galleryImages = rawImages.length > 0 ? rawImages : (tour.thumbnail ? [tour.thumbnail] : []);
-
+  const rawImages = tour.imageUrls?.map((img: any) => img.imageUrl) || [];
+const galleryImages = tour.imageUrls && tour.imageUrls.length > 0 
+                      ? tour.imageUrls 
+                      : (tour.thumbnail ? [tour.thumbnail] : []);
   return (
     <div className="min-h-screen bg-[#f8fafc] py-10">
       <div className="max-w-7xl mx-auto px-4">

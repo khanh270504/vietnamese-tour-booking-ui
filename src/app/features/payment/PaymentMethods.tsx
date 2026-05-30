@@ -33,7 +33,7 @@ export function PaymentMethods({ paymentMethod, setPaymentMethod, orderId }: Pay
           {paymentMethod === "bank" && (
             <div className="mt-2 p-6 bg-white border-2 border-dashed border-blue-200 rounded-2xl animate-in slide-in-from-top-2 duration-300">
               <div className="grid grid-cols-2 gap-4 text-sm font-bold uppercase tracking-tighter">
-                <div><p className="text-gray-400 mb-1">Số tài khoản</p><p className="text-gray-900 text-lg">0123 456 789</p></div>
+                <div><p className="text-gray-400 mb-1">Số tài khoản</p><p className="text-gray-900 text-lg">098765432343567</p></div>
                 <div><p className="text-gray-400 mb-1">Ngân hàng</p><p className="text-gray-900 text-lg">Vietcombank</p></div>
                 <div className="col-span-2 pt-2 border-t border-gray-50">
                   <p className="text-gray-400 mb-1">Nội dung</p><p className="text-blue-600 text-lg">{orderId}</p>
@@ -55,7 +55,7 @@ export function PaymentMethods({ paymentMethod, setPaymentMethod, orderId }: Pay
             </div>
             <div className="flex-1">
               <p className="font-black text-gray-900">Ví điện tử</p>
-              <p className="text-sm text-gray-500 font-medium">MoMo, ZaloPay, VNPay</p>
+              <p className="text-sm text-gray-500 font-medium">VNPay</p>
             </div>
             <div className="w-6 h-6 rounded-full border-2 border-gray-200 peer-checked:border-[#2563eb] flex items-center justify-center">
               <div className={`w-3 h-3 rounded-full bg-[#2563eb] transition-transform ${paymentMethod === "wallet" ? "scale-100" : "scale-0"}`}></div>

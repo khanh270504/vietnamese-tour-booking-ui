@@ -24,50 +24,86 @@ const COLORS = ["#2563eb", "#10b981", "#8b5cf6", "#f59e0b"];
 
 export function AdvancedAnalyticsPage() {
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
-      {/* Title Section */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+    <div className="p-6 bg-slate-50 min-h-screen space-y-8">
+
+      {/* HEADER */}
+      <div className="flex flex-col lg:flex-row justify-between gap-4 lg:items-end">
         <div>
-          <h1 className="text-4xl font-black text-slate-900 tracking-tight">Hệ thống phân tích</h1>
-          <p className="text-slate-500 font-medium">Báo cáo tổng quan hiệu suất kinh doanh năm 2026</p>
+          <h1 className="text-3xl lg:text-4xl font-black tracking-tight text-slate-900">
+            Analytics & Business Insight
+          </h1>
+          <p className="text-slate-500 mt-1">
+            Phân tích hiệu suất kinh doanh theo thời gian thực & chiến lược
+          </p>
         </div>
-        <button className="bg-white border-2 border-slate-100 px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm">
-          Xuất dữ liệu .CSV
-        </button>
+
+        <div className="flex gap-2">
+          <button className="px-5 py-2.5 bg-white border rounded-2xl text-sm font-bold hover:bg-slate-100">
+            Export CSV
+          </button>
+          <button className="px-5 py-2.5 bg-black text-white rounded-2xl text-sm font-bold hover:opacity-90">
+            View Report
+          </button>
+        </div>
       </div>
 
-      {/* Grid thẻ chỉ số */}
+      {/* KPI STRIP (QUAN TRỌNG NHẤT) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <StatCard title="Tỷ lệ chốt đơn" value="14.4%" trend="+2.3% tháng này" icon={Target} color="bg-blue-600" />
-        <StatCard title="Khách thân thiết" value="87%" trend="+6% hài lòng" icon={UserCheck} color="bg-emerald-500" />
-        <StatCard title="Tỷ lệ hủy" value="3.8%" trend="-1.1% cải thiện" icon={TrendingUp} color="bg-rose-500" />
+        <StatCard
+          title="Conversion Rate"
+          value="14.4%"
+          trend="+2.3% vs last month"
+          icon={Target}
+          color="bg-blue-600"
+        />
+        <StatCard
+          title="Customer Retention"
+          value="87%"
+          trend="+6% improvement"
+          icon={UserCheck}
+          color="bg-emerald-500"
+        />
+        <StatCard
+          title="Cancellation Rate"
+          value="3.8%"
+          trend="-1.1% improvement"
+          icon={TrendingUp}
+          color="bg-rose-500"
+        />
       </div>
 
-      {/* Biểu đồ chính */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Phễu chuyển đổi */}
-        <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-md transition-all">
-          <h3 className="font-black text-slate-900 uppercase tracking-tight mb-8 text-sm">Phễu khách hàng tiềm năng</h3>
-          <div className="h-[300px] w-full">
+      {/* MAIN GRID */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        {/* LEFT: Funnel */}
+        <div className="lg:col-span-2 bg-white p-6 rounded-3xl shadow-sm border">
+          <h3 className="text-sm font-black uppercase tracking-widest text-slate-500 mb-6">
+            Customer Funnel
+          </h3>
+
+          <div className="h-[320px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={leadConversionData} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
+                <CartesianGrid stroke="#f1f5f9" horizontal={false} />
                 <XAxis type="number" hide />
-                <YAxis 
-                  dataKey="stage" 
-                  type="category" 
-                  stroke="#94a3b8" 
-                  fontSize={11} 
-                  fontWeight={900} // 🎯 Sửa fontBold thành fontWeight
-                  width={100} 
+                <YAxis
+                  dataKey="stage"
+                  type="category"
+                  width={120}
+                  fontSize={12}
+                  fontWeight={800}
+                  stroke="#64748b"
                 />
-                <Tooltip 
-                  cursor={{fill: '#f8fafc'}} 
-                  contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
+                <Tooltip
+                  contentStyle={{
+                    borderRadius: 12,
+                    border: "none",
+                    boxShadow: "0 10px 30px rgba(0,0,0,0.08)"
+                  }}
                 />
-                <Bar dataKey="count" radius={[0, 10, 10, 0]} barSize={28}>
+                <Bar dataKey="count" radius={[0, 12, 12, 0]} barSize={26}>
                   {leadConversionData.map((_, i) => (
-                    <Cell key={`cell-${i}`} fill={COLORS[i % COLORS.length]} />
+                    <Cell key={i} fill={COLORS[i]} />
                   ))}
                 </Bar>
               </BarChart>
@@ -75,40 +111,40 @@ export function AdvancedAnalyticsPage() {
           </div>
         </div>
 
-        {/* Nguồn khách hàng */}
-        <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm flex flex-col items-center hover:shadow-md transition-all">
-          <h3 className="font-black text-slate-900 uppercase tracking-tight mb-4 self-start text-sm">Nguồn khách hàng</h3>
-          <div className="h-[250px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie 
-                  data={customerSourceData} 
-                  innerRadius={70} 
-                  outerRadius={100} 
-                  paddingAngle={8} 
-                  dataKey="value"
-                  stroke="none"
-                >
-                  {customerSourceData.map((entry, i) => (
-                    <Cell key={`cell-pie-${i}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip 
-                   contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-          {/* Legend thủ công cho đẹp */}
-          <div className="grid grid-cols-2 gap-4 mt-4 w-full">
-            {customerSourceData.map((entry, i) => (
-              <div key={i} className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-xl">
-                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
-                <span className="text-[10px] font-black text-slate-500 uppercase tracking-tight">{entry.name}</span>
-                <span className="ml-auto text-[10px] font-black text-slate-900">{entry.value}%</span>
+        {/* RIGHT: Insight panel */}
+        <div className="bg-white p-6 rounded-3xl shadow-sm border flex flex-col">
+
+          <h3 className="text-sm font-black uppercase tracking-widest text-slate-500 mb-6">
+            Insight Breakdown
+          </h3>
+
+          <div className="space-y-4">
+
+            {customerSourceData.map((s, i) => (
+              <div key={i} className="p-4 bg-slate-50 rounded-2xl">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm font-bold">{s.name}</span>
+                  <span className="text-xs font-black">{s.value}%</span>
+                </div>
+
+                <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
+                  <div
+                    className="h-full rounded-full"
+                    style={{
+                      width: `${s.value}%`,
+                      backgroundColor: s.color
+                    }}
+                  />
+                </div>
               </div>
             ))}
+
           </div>
+
+          <div className="mt-auto pt-6 text-xs text-slate-400">
+            Insight: Facebook & Google vẫn là nguồn chính → nên tăng ads retargeting.
+          </div>
+
         </div>
       </div>
     </div>
