@@ -1,164 +1,175 @@
-import { useState } from "react";
-import { DndProvider, useDrag, useDrop } from "react-dnd";
+import { useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom"; // 🎯 ĐÃ THÊM
+import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { Phone, Mail, User, Calendar, ChevronRight, Plus, Filter, Search } from "lucide-react";
-import { cn } from "../../lib/utils";
+import { Plus, Loader2, Search, Users, CheckCircle2, TrendingUp } from "lucide-react";
+import { toast } from "sonner"; 
 
-// --- MOCK DATA (Giữ nguyên để sau này ông giáo map API Java) ---
-const initialLeads = [
-  { id: "L001", customerName: "Nguyễn Văn Hoàng", phone: "0901234567", email: "hoang@email.com", tour: "Hà Nội - Hạ Long 3N2Đ", assignedTo: "Trần Mai", nextFollowUp: "10/05/2026", customerType: "Mới", status: "new" },
-  { id: "L002", customerName: "Lê Thị Hương", phone: "0912345678", email: "huong@email.com", tour: "Phú Quốc Resort 4N3Đ", assignedTo: "Nguyễn An", nextFollowUp: "11/05/2026", customerType: "VIP", status: "contacted" },
-];
+import { LEAD_COLUMNS } from "../features/crm/crm.constants";
+import { LeadColumn } from "../features/crm/LeadColumn";
+import { AddLeadModal } from "../features/crm/AddLeadModal";
+import { LeadDetailPanel } from "../features/crm/LeadDetailPanel";
+import { EditLeadModal } from "../features/crm/EditLeadModal"; 
 
-const columns = [
-  { id: "new", title: "Khách mới", color: "bg-slate-500" },
-  { id: "contacted", title: "Đã liên hệ", color: "bg-blue-500" },
-  { id: "consulting", title: "Đang tư vấn", color: "bg-purple-500" },
-  { id: "negotiating", title: "Thương lượng", color: "bg-orange-500" },
-  { id: "closed", title: "Đã chốt", color: "bg-emerald-500" },
-  { id: "failed", title: "Thất bại", color: "bg-rose-500" },
-];
+import { useLeads } from "./../features/crm/hooks/useLeads";
+import { LeadStatus, LeadUpdateRequest } from "./../../services/crm/crm.types";
+import { crmService } from "./../../services/crm/crm.service";
 
-const customerTypeColors: any = {
-  "Mới": "bg-blue-50 text-blue-600 border-blue-100",
-  "VIP": "bg-purple-50 text-purple-600 border-purple-100",
-  "Khách cũ": "bg-emerald-50 text-emerald-600 border-emerald-100",
-  "Gia đình": "bg-orange-50 text-orange-600 border-orange-100",
-};
-
-// --- COMPONENT CON: THẺ KHÁCH HÀNG ---
-function LeadCard({ lead }: { lead: any }) {
-  const [{ isDragging }, drag] = useDrag({
-    type: "LEAD",
-    item: { id: lead.id, status: lead.status },
-    collect: (monitor) => ({ isDragging: monitor.isDragging() }),
-  });
-
-  return (
-    <div
-      ref={(node) => { drag(node); }}
-      className={cn(
-        "bg-white rounded-3xl border border-slate-100 p-5 mb-4 cursor-grab active:cursor-grabbing shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300",
-        isDragging ? "opacity-20 scale-95" : "opacity-100"
-      )}
-    >
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex-1">
-          <h4 className="font-black text-slate-900 leading-tight">{lead.customerName}</h4>
-          <p className="text-[10px] font-black text-blue-500 uppercase mt-1 tracking-wider">{lead.tour}</p>
-        </div>
-        <span className={cn("px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter border", customerTypeColors[lead.customerType])}>
-          {lead.customerType}
-        </span>
-      </div>
-
-      <div className="space-y-2.5">
-        <div className="flex items-center gap-3 text-xs font-bold text-slate-500">
-          <Phone size={14} className="text-slate-300" />
-          <span>{lead.phone}</span>
-        </div>
-        <div className="flex items-center gap-3 text-xs font-bold text-slate-500">
-          <User size={14} className="text-slate-300" />
-          <span>Sale: {lead.assignedTo}</span>
-        </div>
-        <div className="mt-4 p-3 bg-slate-50 rounded-2xl flex items-center gap-3">
-          <Calendar size={14} className="text-blue-500" />
-          <span className="text-[10px] font-black text-slate-600 uppercase tracking-tight">Hẹn: {lead.nextFollowUp}</span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// --- COMPONENT CON: CỘT PIPELINE ---
-function Column({ column, leads, onDrop }: { column: any; leads: any[]; onDrop: any }) {
-  const [{ isOver }, drop] = useDrop({
-    accept: "LEAD",
-    drop: (item: any) => onDrop(item.id, column.id),
-    collect: (monitor) => ({ isOver: monitor.isOver() }),
-  });
-
-  return (
-    <div className="flex-shrink-0 w-[320px] flex flex-col h-full">
-      {/* Header Cột */}
-      <div className="mb-6 flex items-center justify-between px-2">
-        <div className="flex items-center gap-3">
-          <div className={cn("w-2 h-6 rounded-full", column.color)} />
-          <h3 className="font-black text-slate-900 uppercase tracking-tighter text-sm">{column.title}</h3>
-        </div>
-        <span className="bg-white border border-slate-100 px-3 py-1 rounded-full text-xs font-black text-slate-400">
-          {leads.length}
-        </span>
-      </div>
-
-      {/* Vùng thả (Drop Zone) */}
-      <div 
-        ref={(node) => { drop(node); }}
-        className={cn(
-          "flex-1 overflow-y-auto px-1 rounded-[2rem] transition-colors duration-300 custom-scrollbar pb-10",
-          isOver ? "bg-blue-50/50" : "bg-transparent"
-        )}
-      >
-        {leads.map((lead) => (
-          <LeadCard key={lead.id} lead={lead} />
-        ))}
-        
-        {/* Nút thêm nhanh cuối mỗi cột */}
-        <button className="w-full py-4 border-2 border-dashed border-slate-100 rounded-3xl text-slate-300 hover:border-blue-200 hover:text-blue-400 transition-all flex items-center justify-center gap-2">
-           <Plus size={16} />
-           <span className="text-xs font-black uppercase tracking-widest">Add Lead</span>
-        </button>
-      </div>
-    </div>
-  );
-}
-
-// --- TRANG CHÍNH ---
 export function CRMLeadsPage() {
-  const [leads, setLeads] = useState(initialLeads);
+  const navigate = useNavigate(); // 🎯 ĐÃ THÊM
 
-  const handleDrop = (leadId: string, newStatus: string) => {
-    setLeads((prev) => prev.map((l) => (l.id === leadId ? { ...l, status: newStatus } : l)));
+  const { leads, isLoading, fetchLeads, changeLeadStatus, addNewLead } = useLeads();
+  const [selectedLead, setSelectedLead] = useState<any>(null);
+  
+  const [isAddLeadOpen, setIsAddLeadOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    fetchLeads();
+  }, [fetchLeads]);
+
+  const filteredLeads = useMemo(() => {
+    if (!searchTerm.trim()) return leads;
+    const lowerQuery = searchTerm.toLowerCase();
+    return leads.filter(l => 
+      l.fullName?.toLowerCase().includes(lowerQuery) || 
+      l.phone?.includes(searchTerm)
+    );
+  }, [leads, searchTerm]);
+
+  const stats = useMemo(() => {
+    return {
+      total: leads.length,
+      won: leads.filter(l => l.status === "WON").length,
+      processing: leads.filter(l => l.status !== "WON" && l.status !== "LOST").length,
+    };
+  }, [leads]);
+
+ const handleDrop = async (leadId: number, newStatus: LeadStatus) => {
+    await changeLeadStatus(leadId, newStatus);
+    
+    if (newStatus === "WON") {
+      toast.success("🎉 Chốt đơn! Đang chuyển sang trang Đặt tour...");
+      
+      setTimeout(() => {
+        // 🎯 NHẢY ĐÚNG VÀO PATH "/admin/bookings" VÀ KÈM TÍN HIỆU MỞ MODAL
+        navigate(`/admin/bookings?autoCreate=true&leadId=${leadId}`); 
+      }, 1500);
+    }
   };
+
+  const handleSaveNewLead = async (data: any) => {
+    const payload = {
+      ...data, 
+      email: data.email?.trim() === "" ? null : data.email,
+      source: data.source?.trim() === "" ? null : data.source, 
+      notes: data.notes?.trim() === "" ? null : data.notes,     
+    };
+
+    const success = await addNewLead(payload);
+    if (success) setIsAddLeadOpen(false);
+  };
+
+  const handleUpdateLead = async (id: number, data: LeadUpdateRequest) => {
+    try {
+      await crmService.updateLead(id, data);
+      await fetchLeads(); 
+      setIsEditModalOpen(false); 
+      setSelectedLead({ ...selectedLead, ...data }); 
+      toast.success("Cập nhật thông tin khách hàng thành công!");
+    } catch (error) {
+      toast.error("Lỗi khi cập nhật thông tin khách hàng.");
+    }
+  };
+
+  if (isLoading) {
+    return <div className="h-screen flex items-center justify-center bg-[#f8fafc]"><Loader2 className="animate-spin text-blue-600 w-10 h-10" /></div>;
+  }
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="h-full flex flex-col space-y-8 animate-in fade-in duration-500">
+      <div className="h-screen flex flex-col space-y-6 bg-[#f8fafc] p-6 overflow-hidden">
         
-        {/* HEADER SECTION */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-2">
-          <div>
-            <h1 className="text-4xl font-black text-slate-900 tracking-tight">CRM Pipeline</h1>
-            <p className="text-slate-500 font-medium">Theo dõi hành trình khách hàng từ lúc quan tâm đến khi chốt tour</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="relative group">
-               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-               <input placeholder="Tìm nhanh khách..." className="pl-11 pr-4 py-3 bg-white border border-slate-100 rounded-2xl text-xs font-bold outline-none focus:ring-4 focus:ring-blue-500/5 transition-all w-64" />
+        <div className="shrink-0 space-y-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-2">
+            <div>
+              <h1 className="text-3xl font-black text-slate-900 tracking-tight">CRM Pipeline</h1>
+              <p className="text-slate-500 font-medium mt-1">Quản lý và chăm sóc khách hàng</p>
             </div>
-            <button className="px-6 py-3 bg-blue-600 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-xl shadow-blue-100 hover:bg-blue-700 transition-all active:scale-95">
-              + New Lead
+            <button onClick={() => setIsAddLeadOpen(true)} className="px-6 py-3.5 bg-blue-600 text-white rounded-2xl font-black text-sm tracking-wide shadow-[0_8px_20px_-6px_rgba(37,99,235,0.5)] hover:bg-blue-700 transition-all flex items-center gap-2">
+              <Plus size={18} strokeWidth={3} /> TẠO KHÁCH HÀNG
             </button>
+          </div>
+
+          <div className="flex flex-col xl:flex-row gap-4 px-2 items-center justify-between">
+            <div className="flex gap-4 w-full xl:w-auto overflow-x-auto custom-scrollbar-horizontal pb-2 xl:pb-0">
+              <div className="bg-white px-5 py-3.5 rounded-2xl border border-slate-200/60 shadow-sm flex items-center gap-4 min-w-[160px]">
+                <div className="p-2.5 bg-blue-50 text-blue-600 rounded-xl"><Users size={20} /></div>
+                <div>
+                  <p className="text-[11px] font-bold text-slate-400 uppercase">Tổng Lead</p>
+                  <p className="text-xl font-black text-slate-800">{stats.total}</p>
+                </div>
+              </div>
+              <div className="bg-white px-5 py-3.5 rounded-2xl border border-slate-200/60 shadow-sm flex items-center gap-4 min-w-[160px]">
+                <div className="p-2.5 bg-amber-50 text-amber-600 rounded-xl"><TrendingUp size={20} /></div>
+                <div>
+                  <p className="text-[11px] font-bold text-slate-400 uppercase">Đang theo đuổi</p>
+                  <p className="text-xl font-black text-slate-800">{stats.processing}</p>
+                </div>
+              </div>
+              <div className="bg-white px-5 py-3.5 rounded-2xl border border-slate-200/60 shadow-sm flex items-center gap-4 min-w-[160px]">
+                <div className="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl"><CheckCircle2 size={20} /></div>
+                <div>
+                  <p className="text-[11px] font-bold text-slate-400 uppercase">Đã chốt (WON)</p>
+                  <p className="text-xl font-black text-slate-800">{stats.won}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="relative w-full xl:w-80 shrink-0">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+              <input 
+                type="text" 
+                placeholder="Tìm tên, số điện thoại..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-11 pr-4 py-3.5 bg-white border border-slate-200/80 rounded-2xl text-sm font-semibold text-slate-700 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all shadow-sm"
+              />
+            </div>
           </div>
         </div>
 
-        {/* PIPELINE CONTAINER */}
         <div className="flex-1 overflow-x-auto custom-scrollbar-horizontal pb-4">
-          <div className="flex gap-8 h-full min-h-[700px] px-2">
-            {columns.map((column) => {
-              const columnLeads = leads.filter((l) => l.status === column.id);
-              return (
-                <Column 
-                  key={column.id} 
-                  column={column} 
-                  leads={columnLeads} 
-                  onDrop={handleDrop} 
-                />
-              );
-            })}
+          <div className="flex gap-6 h-full min-w-max px-2 items-start">
+            {LEAD_COLUMNS.map((column) => (
+              <LeadColumn 
+                key={column.id} 
+                column={column} 
+                leads={filteredLeads.filter((l) => l.status === column.id)} 
+                onDrop={handleDrop} 
+                onLeadClick={setSelectedLead}
+              />
+            ))}
           </div>
         </div>
       </div>
+
+      <AddLeadModal isOpen={isAddLeadOpen} onClose={() => setIsAddLeadOpen(false)} onSave={handleSaveNewLead} />
+      
+      <EditLeadModal 
+        isOpen={isEditModalOpen} 
+        onClose={() => setIsEditModalOpen(false)} 
+        lead={selectedLead} 
+        onUpdate={handleUpdateLead} 
+      />
+
+      <LeadDetailPanel 
+        lead={selectedLead} 
+        onClose={() => setSelectedLead(null)} 
+        onEdit={() => setIsEditModalOpen(true)} 
+      />
     </DndProvider>
   );
 }

@@ -1,18 +1,18 @@
 import { Download, TrendingUp, Users, DollarSign, Target, ArrowUpRight } from "lucide-react";
 import { 
-  BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, 
-  Tooltip, Legend, ResponsiveContainer, AreaChart, Area 
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, 
+  Tooltip, ResponsiveContainer, AreaChart, Area 
 } from "recharts";
 import { cn } from "../../lib/utils";
 
-// --- MOCK DATA (Giữ nguyên để sau này map API Java) ---
+// --- MOCK DATA ---
 const monthlyRevenueData = [
-  { month: "T1", revenue: 180, target: 200 },
-  { month: "T2", revenue: 210, target: 200 },
-  { month: "T3", revenue: 240, target: 220 },
-  { month: "T4", revenue: 220, target: 220 },
-  { month: "T5", revenue: 280, target: 250 },
-  { month: "T6", revenue: 320, target: 270 },
+  { month: "T1", revenue: 180, target: 200, users: 450 },
+  { month: "T2", revenue: 210, target: 200, users: 520 },
+  { month: "T3", revenue: 240, target: 220, users: 580 },
+  { month: "T4", revenue: 220, target: 220, users: 550 },
+  { month: "T5", revenue: 280, target: 250, users: 690 },
+  { month: "T6", revenue: 320, target: 270, users: 810 },
 ];
 
 const topToursByRevenue = [
@@ -31,7 +31,7 @@ export function ReportsPage() {
           <h1 className="text-4xl font-black text-slate-900 tracking-tight">Báo cáo chiến lược</h1>
           <p className="text-slate-500 font-medium">Phân tích chuyên sâu về tăng trưởng và mục tiêu kinh doanh</p>
         </div>
-        <button className="px-6 py-3 bg-slate-900 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-xl shadow-slate-200 hover:bg-black transition-all active:scale-95 flex items-center gap-2">
+        <button className="px-6 py-3.5 bg-slate-900 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-xl hover:bg-black transition-all active:scale-95 flex items-center gap-2">
           <Download size={16} strokeWidth={3} />
           <span>Xuất báo cáo PDF</span>
         </button>
@@ -39,39 +39,40 @@ export function ReportsPage() {
 
       {/* TOP ANALYTICS GRID */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <ReportStatCard label="Doanh thu T6" value="320M" trend="+18.5%" sub="Vượt mục tiêu" icon={DollarSign} color="from-blue-500 to-blue-600" />
-        <ReportStatCard label="Tỷ lệ chốt" value="29.4%" trend="+1.3%" sub="Tăng ổn định" icon={Target} color="from-purple-500 to-purple-600" />
-        <ReportStatCard label="Giữ chân khách" value="87.5%" trend="+2.1%" sub="Dịch vụ tốt" icon={Users} color="from-emerald-500 to-emerald-600" />
-        <ReportStatCard label="Tăng trưởng" value="+45.2%" trend="YOY" sub="So với 2025" icon={TrendingUp} color="from-orange-500 to-orange-600" />
+        <ReportStatCard label="Doanh thu T6" value="320M" trend="+18.5%" sub="Vượt mục tiêu" icon={DollarSign} color="from-blue-500 to-indigo-500" />
+        <ReportStatCard label="Tỷ lệ chốt" value="29.4%" trend="+1.3%" sub="Tăng ổn định" icon={Target} color="from-blue-500 to-indigo-500" />
+        <ReportStatCard label="Khách hàng mới" value="810" trend="+17.4%" sub="Lưu lượng tăng mạnh" icon={Users} color="from-emerald-400 to-emerald-500" />
+        <ReportStatCard label="Tăng trưởng" value="+45.2%" trend="YOY" sub="So với 2025" icon={TrendingUp} color="from-emerald-400 to-emerald-500" />
       </div>
 
       {/* MAIN CHART: REVENUE VS TARGET */}
       <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
-        <div className="flex justify-between items-center mb-10">
-          <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight">Doanh thu thực tế vs Mục tiêu (triệu đ)</h3>
-          <div className="flex items-center gap-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 gap-4">
+          <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight">Doanh thu thực tế vs Mục tiêu (Triệu VNĐ)</h3>
+          <div className="flex items-center gap-4 bg-slate-50 px-4 py-2 rounded-xl border border-slate-100">
             <div className="flex items-center gap-2">
-               <div className="w-3 h-3 rounded-full bg-blue-600" />
-               <span className="text-[10px] font-black text-slate-400 uppercase">Thực tế</span>
+               <div className="w-3 h-3 rounded-md bg-blue-600 shadow-sm" />
+               <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Thực tế</span>
             </div>
             <div className="flex items-center gap-2">
-               <div className="w-3 h-3 rounded-full bg-emerald-500" />
-               <span className="text-[10px] font-black text-slate-400 uppercase">Mục tiêu</span>
+               <div className="w-3 h-3 rounded-md bg-slate-200" />
+               <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Mục tiêu</span>
             </div>
           </div>
         </div>
         <div className="h-[400px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={monthlyRevenueData} margin={{ top: 20 }}>
+            <BarChart data={monthlyRevenueData} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-              <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontWeight: 900, fontSize: 12}} dy={10} />
-              <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontWeight: 700, fontSize: 12}} />
+              <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{fill: '#64748b', fontWeight: 900, fontSize: 12}} dy={10} />
+              <YAxis axisLine={false} tickLine={false} tick={{fill: '#64748b', fontWeight: 700, fontSize: 12}} domain={['dataMin - 50', 'dataMax + 50']} />
               <Tooltip 
                 cursor={{fill: '#f8fafc'}} 
-                contentStyle={{borderRadius: '20px', border: 'none', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)'}} 
+                contentStyle={{borderRadius: '16px', border: '1px solid #f1f5f9', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}} 
+                labelStyle={{color: '#0f172a', fontWeight: 900, marginBottom: '8px'}}
               />
-              <Bar dataKey="revenue" fill="#2563eb" radius={[12, 12, 0, 0]} barSize={32} />
-              <Bar dataKey="target" fill="#10b981" radius={[12, 12, 0, 0]} barSize={32} />
+              <Bar dataKey="target" name="Mục tiêu" fill="#e2e8f0" radius={[8, 8, 0, 0]} barSize={24} />
+              <Bar dataKey="revenue" name="Thực tế" fill="#2563eb" radius={[8, 8, 0, 0]} barSize={24} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -79,22 +80,23 @@ export function ReportsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
-        {/* RETENTION CHART */}
+        {/* GROWTH AREA CHART */}
         <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
-          <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight mb-8">Cơ cấu nguồn khách hàng</h3>
+          <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight mb-8">Lưu lượng Khách hàng mới</h3>
           <div className="h-[300px] w-full">
              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={monthlyRevenueData}>
+                <AreaChart data={monthlyRevenueData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <defs>
-                    <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
+                    <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                  <XAxis dataKey="month" hide />
-                  <Tooltip />
-                  <Area type="monotone" dataKey="revenue" stroke="#8b5cf6" strokeWidth={4} fillOpacity={1} fill="url(#colorRev)" />
+                  <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#f1f5f9" />
+                  <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12, fontWeight: 700}} dy={10} />
+                  <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12, fontWeight: 700}} />
+                  <Tooltip contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}} />
+                  <Area type="monotone" dataKey="users" name="Số khách mới" stroke="#10b981" strokeWidth={4} fillOpacity={1} fill="url(#colorUsers)" />
                 </AreaChart>
              </ResponsiveContainer>
           </div>
@@ -103,25 +105,25 @@ export function ReportsPage() {
         {/* TOP TOURS PROGRESS */}
         <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
           <div className="flex justify-between items-center mb-8">
-            <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight">Top doanh thu theo Tour</h3>
-            <ArrowUpRight className="text-blue-600" />
+            <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight">Top doanh thu Tour</h3>
+            <button className="p-2 bg-slate-50 text-blue-600 rounded-xl hover:bg-blue-50 transition-colors"><ArrowUpRight size={20} /></button>
           </div>
           <div className="space-y-8">
             {topToursByRevenue.map((tour, index) => (
-              <div key={index} className="group">
+              <div key={index} className="group cursor-pointer">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-3">
-                    <span className="text-[11px] font-black text-slate-300 uppercase tracking-widest">0{index + 1}</span>
+                    <span className="text-[11px] font-black text-slate-300 uppercase tracking-widest bg-slate-50 px-2 py-1 rounded-lg">0{index + 1}</span>
                     <p className="text-sm font-black text-slate-700 group-hover:text-blue-600 transition-colors">{tour.name}</p>
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-black text-slate-900">{tour.revenue}</p>
-                    <p className="text-[10px] font-bold text-emerald-500 uppercase">{tour.percentage}% đóng góp</p>
+                    <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">{tour.percentage}% Tỷ trọng</p>
                   </div>
                 </div>
                 <div className="h-3 bg-slate-50 rounded-full overflow-hidden border border-slate-100 p-0.5">
                   <div
-                    className="h-full bg-gradient-to-r from-blue-500 to-emerald-500 rounded-full transition-all duration-1000"
+                    className="h-full bg-blue-600 rounded-full transition-all duration-1000 group-hover:bg-blue-500"
                     style={{ width: `${tour.percentage * 4}%` }}
                   />
                 </div>
@@ -138,19 +140,19 @@ export function ReportsPage() {
 // COMPONENT CON: ReportStatCard
 function ReportStatCard({ label, value, trend, sub, icon: Icon, color }: any) {
   return (
-    <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-lg transition-all duration-300">
+    <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
       <div className="flex justify-between items-start mb-4">
-        <div className={cn("w-12 h-12 bg-gradient-to-br rounded-2xl flex items-center justify-center text-white shadow-lg", color)}>
-          <Icon size={22} strokeWidth={3} />
+        <div className={cn("w-12 h-12 bg-gradient-to-br rounded-2xl flex items-center justify-center text-white shadow-sm group-hover:shadow-md transition-shadow", color)}>
+          <Icon size={22} strokeWidth={2.5} />
         </div>
-        <span className="px-2.5 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-black rounded-lg uppercase tracking-tighter">
+        <span className="px-3 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-black rounded-xl uppercase tracking-widest border border-emerald-100">
           {trend}
         </span>
       </div>
       <div>
         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{label}</p>
-        <h4 className="text-2xl font-black text-slate-900 leading-tight mb-1">{value}</h4>
-        <p className="text-[10px] font-bold text-slate-400 uppercase italic">{sub}</p>
+        <h4 className="text-3xl font-black text-slate-900 leading-tight mb-1">{value}</h4>
+        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">{sub}</p>
       </div>
     </div>
   );

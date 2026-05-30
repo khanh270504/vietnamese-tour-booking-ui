@@ -11,7 +11,7 @@ export const PassengerTypeLabels: Record<string, string> = {
 
 export interface TourResponse {
   id: number;
-  tourcode: string;           // Mã tour chính
+  tourCode: string;           // Mã tour chính
   name: string;
   description: string;
   status: string;
@@ -21,17 +21,17 @@ export interface TourResponse {
   minParticipants: number;
   duration: string;           
   schedules: ScheduleResponse[]; 
-  tourImages?: TourImageResponse[];
+  imageUrls?: string[];
 }
 
 export interface ScheduleResponse {
   id: number;
   tourId: number;
   tourName: string;
-  scheduleCode: string;       // Mã lịch trình (vd: SAPA2504)
-  departureLocation: string;  // Nơi khởi hành (🎯 Mới)
-  departureDate: string;      // ISO String
-  returnDate: string;         // ISO String
+  scheduleCode?: string;       
+  departureLocation: string;  
+  departureDate: string;      
+  returnDate: string;        
   maxSlots: number;
   availableSlots: number;
   status: string;
@@ -69,14 +69,13 @@ export interface TourCreateRequest {
   thumbnail: string;
   minParticipants: number;
   tourCode: string;
-  // ❌ Xóa tourType và duration: Rác!
 }
 
 export interface TourSearchRequest {
   keyword?: string;
-  destinationIds?: number[];         // 🎯 Hệ Multi-select (number[])
-  departureLocations?: string[];      // 🎯 Lọc theo nơi đi (string[])
-  fromDate?: string;                 // YYYY-MM-DD
+  destinationIds?: number[];         
+  departureLocations?: string[];      
+  fromDate?: string;                
   toDate?: string;
   minPrice?: number;
   maxPrice?: number;
@@ -84,22 +83,21 @@ export interface TourSearchRequest {
 
 export interface ScheduleCreateRequest {
   tourId: number;
-  scheduleCode: string;
-  departureLocation: string;         // 🎯 Admin phải nhập nơi đi
+  departureLocation: string;         
   departureDate: string;
   returnDate: string;
   maxSlots: number;
 }
 
 export interface PricingConfigRequest {
-  scheduleId: number;                // 🎯 Gắn vào lịch trình
+  scheduleId: number;               
   passengerType: string;
   price: number;
   currency?: string;
 }
 
 export interface SurchargeRequest {
-  scheduleId: number;                // 🎯 Gắn vào lịch trình
+  scheduleId: number;                
   surchargeName: string;
   amount: number;
   isMandatory: boolean;
@@ -118,7 +116,6 @@ export interface DestinationResponse {
   description: string;
 }
 
-// --- 🎯 HÌNH ẢNH TOUR (Nếu ông giáo có dùng ở trang chi tiết) ---
 export interface TourImageResponse {
   id: number;
   tourId: number;
@@ -126,5 +123,5 @@ export interface TourImageResponse {
 }
 export interface TourImageRequest {
   tourId: number;
-  imageUrl: string;
+  file: File;
 }

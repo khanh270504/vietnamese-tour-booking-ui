@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom"; // Sửa lại từ "react-router" cho chuẩn bản mới
+import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
   Calendar,
@@ -14,99 +14,293 @@ import {
   CalendarDays,
   Tag,
   Star,
-  TrendingUp,
-  Shield,
-  Zap,
+  MessageSquare,
+  Image,
+  Building2,
+  X,
+  LifeBuoy,
+  PlaneTakeoff,
+  Bell,
 } from "lucide-react";
-import { cn } from "../../lib/utils"; // Nhớ check file utils này nhé ông giáo
 
-// 🎯 SỬA PATH: Thêm tiền tố /admin vào trước để khớp với Nested Routes
-const menuItems = [
-  { path: "/admin", icon: LayoutDashboard, label: "Tổng quan" },
-  { path: "/admin/bookings", icon: Calendar, label: "Đặt tour" },
-  { path: "/admin/tours", icon: MapPin, label: "Tour du lịch" },
-  { path: "/admin/calendar", icon: CalendarDays, label: "Lịch khởi hành" },
-  { path: "/admin/customers", icon: Users, label: "Khách hàng" },
-  { path: "/admin/crm", icon: UserCircle, label: "CRM khách hàng" },
-  { path: "/admin/payments", icon: CreditCard, label: "Thanh toán" },
-  { path: "/admin/vouchers", icon: Tag, label: "Voucher & Khuyến mãi" },
-  { path: "/admin/reviews", icon: Star, label: "Đánh giá" },
-  { path: "/admin/employees", icon: Briefcase, label: "Nhân viên" },
-  { path: "/admin/permissions", icon: Shield, label: "Phân quyền" },
-  { path: "/admin/reports", icon: BarChart3, label: "Báo cáo" },
-  { path: "/admin/analytics", icon: TrendingUp, label: "Phân tích nâng cao" },
-  { path: "/admin/automation", icon: Zap, label: "Tự động hóa" },
-  { path: "/admin/settings", icon: Settings, label: "Cài đặt" },
+import { cn } from "../../lib/utils";
+
+const menuSections = [
+  {
+    title: "TỔNG QUAN",
+    items: [
+      {
+        path: "/admin",
+        icon: LayoutDashboard,
+        label: "Tổng quan",
+      },
+    ],
+  },
+
+  // =========================
+  // SALES / CRM
+  // =========================
+  {
+    title: "KINH DOANH & CRM",
+    items: [
+      {
+        path: "/admin/customers",
+        icon: Users,
+        label: "Khách hàng",
+      },
+      {
+        path: "/admin/crm",
+        icon: UserCircle,
+        label: "CRM Pipeline",
+      },
+      {
+        path: "/admin/chat",
+        icon: MessageSquare,
+        label: "CSKH Chat",
+      },
+      {
+        path: "/admin/tickets",
+        icon: LifeBuoy,
+        label: "Hỗ trợ (Ticket)",
+      },
+    ],
+  },
+
+  // =========================
+  // TOUR OPERATION
+  // =========================
+  {
+    title: "ĐIỀU HÀNH TOUR",
+    items: [
+      {
+        path: "/admin/tours",
+        icon: MapPin,
+        label: "Tour du lịch",
+      },
+      {
+        path: "/admin/calendar",
+        icon: CalendarDays,
+        label: "Lịch khởi hành",
+      },
+      {
+        path: "/admin/suppliers",
+        icon: Building2,
+        label: "Nhà cung cấp",
+      },
+    ],
+  },
+
+  // =========================
+  // BOOKING & PAYMENT
+  // =========================
+  {
+    title: "ĐẶT TOUR & TÀI CHÍNH",
+    items: [
+      {
+        path: "/admin/bookings",
+        icon: Calendar,
+        label: "Đặt tour",
+      },
+      {
+        path: "/admin/payments",
+        icon: CreditCard,
+        label: "Thanh toán",
+      },
+      {
+        path: "/admin/vouchers",
+        icon: Tag,
+        label: "Khuyến mãi",
+      },
+    ],
+  },
+
+  // =========================
+  // CONTENT / MEDIA
+  // =========================
+  {
+    title: "NỘI DUNG",
+    items: [
+      {
+        path: "/admin/media",
+        icon: Image,
+        label: "Thư viện ảnh",
+      },
+      {
+        path: "/admin/reviews",
+        icon: Star,
+        label: "Đánh giá",
+      },
+    ],
+  },
+
+  // =========================
+  // SYSTEM
+  // =========================
+  {
+    title: "QUẢN TRỊ HỆ THỐNG",
+    items: [
+      {
+        path: "/admin/employees",
+        icon: Briefcase,
+        label: "Nhân viên",
+      },
+      {
+        path: "/admin/reports",
+        icon: BarChart3,
+        label: "Báo cáo",
+      },
+      {
+        path: "/admin/notifications",
+        icon: Bell,
+        label: "Thông báo",
+      },
+      {
+        path: "/admin/settings",
+        icon: Settings,
+        label: "Cài đặt",
+      },
+    ],
+  },
 ];
 
-export function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => void }) {
+export function Sidebar({
+  collapsed,
+  onToggle,
+  isMobileOpen,
+  onMobileClose,
+}: any) {
   const location = useLocation();
 
+  const isActiveRoute = (path: string) => {
+    if (path === "/admin") {
+      return location.pathname === "/admin";
+    }
+
+    return location.pathname.startsWith(path);
+  };
+
   return (
-    <aside
-      className={cn(
-        "bg-white border-r border-slate-200 transition-all duration-300 flex flex-col h-screen",
-        collapsed ? "w-20" : "w-64"
+    <>
+      {isMobileOpen && (
+        <div
+          className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[40] lg:hidden"
+          onClick={onMobileClose}
+        />
       )}
-    >
-      {/* Header Sidebar */}
-      <div className="h-16 flex items-center justify-between px-6 border-b border-slate-200 shrink-0">
-        {!collapsed && (
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-emerald-500 rounded-lg flex items-center justify-center shadow-lg shadow-blue-100">
-              <Palmtree className="w-5 h-5 text-white" />
-            </div>
-            <span className="font-black text-slate-900 tracking-tighter uppercase text-sm">TravelVN Admin</span>
-          </div>
+
+      <aside
+        className={cn(
+          "fixed lg:sticky top-0 left-0 z-[50] h-screen bg-white border-r border-slate-100 transition-all duration-300 flex flex-col",
+          collapsed ? "lg:w-20" : "lg:w-72",
+          isMobileOpen
+            ? "translate-x-0 w-72 shadow-2xl"
+            : "-translate-x-full lg:translate-x-0"
         )}
-        {collapsed && (
-          <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-emerald-500 rounded-lg flex items-center justify-center mx-auto">
-            <Palmtree className="w-5 h-5 text-white" />
-          </div>
-        )}
-      </div>
-
-      {/* Menu Navigation */}
-      <nav className="flex-1 px-3 py-6 overflow-y-auto custom-scrollbar">
-        <ul className="space-y-1.5">
-          {menuItems.map((item) => {
-            const isActive = location.pathname === item.path;
-            const Icon = item.icon;
-
-            return (
-              <li key={item.path}>
-                <Link
-                  to={item.path}
-                  className={cn(
-                    "flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group relative",
-                    isActive
-                      ? "bg-blue-50 text-blue-600"
-                      : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
-                  )}
-                >
-                  <Icon className={cn("w-5 h-5 flex-shrink-0 transition-transform", isActive && "scale-110")} />
-                  {!collapsed && <span className="text-[13px] font-bold tracking-tight">{item.label}</span>}
-                  
-                  {/* Tooltip khi bị collapsed */}
-                  {collapsed && (
-                    <div className="absolute left-16 bg-slate-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold opacity-0 group-hover:opacity-100 pointer-events-none transition-all z-50 whitespace-nowrap shadow-xl">
-                      {item.label}
-                    </div>
-                  )}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
-
-      {/* Footer / Toggle Button */}
-      <button
-        onClick={onToggle}
-        className="h-14 flex items-center justify-center border-t border-slate-100 text-slate-400 hover:text-blue-600 hover:bg-slate-50 transition-all shrink-0"
       >
-        <ChevronLeft className={cn("w-6 h-6 transition-transform duration-500", collapsed && "rotate-180")} />
-      </button>
-    </aside>
+        {/* HEADER */}
+        <div className="h-24 flex items-center justify-between px-6 border-b border-slate-100 shrink-0">
+          <div
+            className={cn(
+              "flex items-center gap-3",
+              collapsed && "lg:hidden"
+            )}
+          >
+            <div className="w-11 h-11 bg-gradient-to-br from-blue-600 to-indigo-500 rounded-2xl flex items-center justify-center text-white shadow-lg">
+              <Palmtree size={22} />
+            </div>
+
+            <div className="leading-tight">
+              <p className="font-black text-slate-900 uppercase text-sm tracking-tight">
+                Travel Admin
+              </p>
+
+              <p className="text-[11px] text-slate-400 font-medium">
+                Booking & CRM System
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={onMobileClose}
+            className="lg:hidden p-2 text-slate-400"
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        {/* NAVIGATION */}
+        <nav className="flex-1 px-3 py-5 overflow-y-auto custom-scrollbar">
+          <div className="space-y-6">
+            {menuSections.map((section) => (
+              <div key={section.title}>
+                {/* SECTION TITLE */}
+                {!collapsed && (
+                  <p className="px-3 mb-2 text-[11px] font-black tracking-wider text-slate-400 uppercase">
+                    {section.title}
+                  </p>
+                )}
+
+                {/* ITEMS */}
+                <ul className="space-y-1">
+                  {section.items.map((item) => {
+                    const isActive = isActiveRoute(item.path);
+
+                    return (
+                      <li key={item.path}>
+                        <Link
+                          to={item.path}
+                          onClick={onMobileClose}
+                          className={cn(
+                            "flex items-center gap-3 px-3 py-3 rounded-2xl transition-all duration-200 group relative",
+                            isActive
+                              ? "bg-blue-50 text-blue-600 shadow-sm"
+                              : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+                          )}
+                        >
+                          {/* ACTIVE BAR */}
+                          {isActive && (
+                            <div className="absolute left-0 top-2 bottom-2 w-1 rounded-full bg-blue-600" />
+                          )}
+
+                          <item.icon
+                            size={20}
+                            className={cn(
+                              "shrink-0 transition-transform",
+                              isActive && "scale-110"
+                            )}
+                          />
+
+                          <span
+                            className={cn(
+                              "text-[13px] font-bold",
+                              collapsed && "lg:hidden"
+                            )}
+                          >
+                            {item.label}
+                          </span>
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </nav>
+
+        {/* FOOTER */}
+        <button
+          onClick={onToggle}
+          className="hidden lg:flex h-14 items-center justify-center border-t border-slate-100 text-slate-400 hover:text-blue-600 transition-colors"
+        >
+          <ChevronLeft
+            className={cn(
+              "transition-transform duration-500",
+              collapsed && "rotate-180"
+            )}
+          />
+        </button>
+      </aside>
+    </>
   );
 }
