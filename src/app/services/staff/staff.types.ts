@@ -12,27 +12,28 @@ export interface DepartmentResponse {
 
 export interface StaffCreateRequest {
     email: string;
-    password?: string;
+    password: string;   
     fullName: string;
     roleName: string;  
     departmentId?: string;
     position?: string; 
-    employeeCode?: string;
     phone?: string;
 }
 
 export interface StaffUpdateRequest {
-    fullName?: string;
-    phone?: string;
+    fullName: string;    
+    phone: string;       
+    roleName?: string;   
     departmentId?: string;
     hireDate?: string;  
     position?: string;
-    status?: string;    
 }
 
 export interface StaffProfileResponse {
     staffId: number;       
     employeeCode: string;
+    email: string;       
+    roleName: string;    
     fullName: string;
     phone: string;
     departmentName: string;

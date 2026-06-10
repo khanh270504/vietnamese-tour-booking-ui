@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Package, Calendar, Users, DollarSign, MapPin, Phone, Mail, Loader2, Info } from "lucide-react";
+import { Package, Calendar, Users, DollarSign, MapPin, Phone, Mail, Loader2, Info, LifeBuoy } from "lucide-react";
 import { LoginModal } from "../features/auth/LoginModal";
 import api from "../services/api"; 
 import { toast } from "react-toastify";
+import { TicketModal } from "../features/ticket/TicketModal"; 
 
 export function MyOrdersPage() {
   const navigate = useNavigate();
@@ -11,9 +12,12 @@ export function MyOrdersPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [showLoginModal, setShowLoginModal] = useState(false);
   
-  // Lấy token hoặc accessToken (phòng hờ 2 luồng login khác nhau)
-const token = localStorage.getItem("token") || localStorage.getItem("access_token");
-const isLoggedIn = !!token;
+  // STATE CHO TICKET MODAL
+  const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
+  const [selectedBookingCode, setSelectedBookingCode] = useState<string | null>(null);
+  
+  const token = localStorage.getItem("token") || localStorage.getItem("access_token");
+  const isLoggedIn = !!token;
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -26,9 +30,7 @@ const isLoggedIn = !!token;
       try {
         setIsLoading(true);
         const response = await api.get("/api/v1/bookings/me");
-        
         const data = response.data.result || response.data;
-        
         setOrders(Array.isArray(data) ? data : []);
       } catch (error: any) {
         console.error("Lỗi lấy danh sách đơn:", error);
@@ -45,7 +47,6 @@ const isLoggedIn = !!token;
     fetchMyOrders();
   }, [isLoggedIn]);
 
-  // Hàm helper format ngày tháng
   const formatDate = (dateString: string) => {
     if (!dateString) return "---";
     return new Date(dateString).toLocaleDateString('vi-VN');
@@ -53,17 +54,18 @@ const isLoggedIn = !!token;
 
   const getStatusInfo = (status: string) => {
     switch (status) {
-      case "CONFIRMED":
-        return { label: "Đã xác nhận", color: "bg-green-100 text-green-700" };
-      case "PENDING":
-        return { label: "Chờ thanh toán", color: "bg-orange-100 text-orange-700" };
-      case "COMPLETED":
-        return { label: "Hoàn thành", color: "bg-blue-100 text-blue-700" };
-      case "CANCELLED":
-        return { label: "Đã hủy", color: "bg-red-100 text-red-700" };
-      default:
-        return { label: status, color: "bg-gray-100 text-gray-700" };
+      case "CONFIRMED": return { label: "Đã xác nhận", color: "bg-green-100 text-green-700" };
+      case "PENDING": return { label: "Chờ thanh toán", color: "bg-orange-100 text-orange-700" };
+      case "COMPLETED": return { label: "Hoàn thành", color: "bg-blue-100 text-blue-700" };
+      case "CANCELLED": return { label: "Đã hủy", color: "bg-red-100 text-red-700" };
+      default: return { label: status, color: "bg-gray-100 text-gray-700" };
     }
+  };
+
+  // Hàm xử lý mở Modal
+  const handleOpenTicketModal = (bookingCode: string) => {
+    setSelectedBookingCode(bookingCode);
+    setIsTicketModalOpen(true);
   };
 
   if (!isLoggedIn) {
@@ -158,6 +160,7 @@ const isLoggedIn = !!token;
                     </div>
                   </div>
 
+                  {/* NÚT ACTION CỦA MỖI ĐƠN */}
                   <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t">
                     <button
                       onClick={() => navigate(`/confirmation/${order.id}`)}
@@ -165,6 +168,7 @@ const isLoggedIn = !!token;
                     >
                       XEM CHI TIẾT
                     </button>
+                    
                     {order.status === "PENDING" && (
                       <button
                         onClick={() => navigate(`/payment/${order.id}`)}
@@ -172,6 +176,17 @@ const isLoggedIn = !!token;
                       >
                         THANH TOÁN NGAY
                       </button>
+                    )}
+
+                    {/* NÚT HỖ TRỢ CHỈ HIỆN KHI ĐƠN ĐÃ ĐƯỢC XÁC NHẬN HOẶC HOÀN THÀNH */}
+                    {(order.status === "CONFIRMED" || order.status === "COMPLETED") && (
+                       <button
+                         onClick={() => handleOpenTicketModal(order.bookingCode)}
+                         className="flex-1 bg-orange-100 text-orange-700 py-4 rounded-2xl font-black hover:bg-orange-200 transition-all flex items-center justify-center gap-2"
+                       >
+                         <LifeBuoy className="w-5 h-5" />
+                         HỖ TRỢ ĐƠN NÀY
+                       </button>
                     )}
                   </div>
                 </div>
@@ -181,7 +196,6 @@ const isLoggedIn = !!token;
         </div>
       )}
       
-      {/* Policy Box */}
       <div className="mt-12 bg-orange-50 border-2 border-orange-100 rounded-[2rem] p-8 flex gap-5">
           <Info className="w-6 h-6 text-orange-600 mt-1" />
           <div className="text-sm text-orange-800 font-medium">
@@ -189,6 +203,13 @@ const isLoggedIn = !!token;
             <p>Hệ thống tự động hủy đơn sau 24h nếu chưa thanh toán. Liên hệ 1900 1234 để được hỗ trợ.</p>
           </div>
       </div>
+
+      {/* NHÚNG MODAL TICKET VÀO ĐÂY */}
+      <TicketModal 
+        isOpen={isTicketModalOpen}
+        onClose={() => setIsTicketModalOpen(false)}
+        bookingCode={selectedBookingCode}
+      />
     </div>
   );
 }

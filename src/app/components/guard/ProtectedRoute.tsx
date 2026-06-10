@@ -11,10 +11,9 @@ export function ProtectedRoute({
   allowedRoles,
   children,
 }: ProtectedRouteProps) {
-
   const location = useLocation();
 
-  // check token hợp lệ
+  // 1. Check token hợp lệ
   if (!authService.isAuthenticated()) {
     return (
       <Navigate
@@ -25,22 +24,29 @@ export function ProtectedRoute({
     );
   }
 
-  // lấy user từ JWT
   const user = authService.getUserProfile();
+  const userRole = user?.role; 
 
-  // check role
   if (allowedRoles && allowedRoles.length > 0) {
+    const hasPermission = allowedRoles.some(role => {
+      if (!userRole) return false;
+      const cleanRole = role.replace("ROLE_", "");
+      const cleanUserRole = userRole.replace("ROLE_", "");
+      return cleanRole === cleanUserRole;
+    });
 
-    if (!user || !allowedRoles.includes(user.role)) {
-
+    if (!hasPermission) {
       console.warn(
-        `Truy cập bị từ chối: Yêu cầu [${allowedRoles}], nhưng user có [${user?.role}]`
+        `Truy cập bị từ chối: Yêu cầu [${allowedRoles}], nhưng user có [${userRole}]`
       );
+
+      if (userRole && (userRole.includes("ADMIN") || userRole.includes("SALE"))) {
+        return <Navigate to="/admin" replace />;
+      }
 
       return <Navigate to="/" replace />;
     }
   }
 
-  // hỗ trợ cả children lẫn nested routes
   return children ? <>{children}</> : <Outlet />;
 }

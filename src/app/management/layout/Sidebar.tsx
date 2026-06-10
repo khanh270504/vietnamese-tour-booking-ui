@@ -20,6 +20,7 @@ import {
   X,
   LifeBuoy,
   PlaneTakeoff,
+  Receipt,
   Bell,
 } from "lucide-react";
 
@@ -110,6 +111,11 @@ const menuSections = [
         path: "/admin/vouchers",
         icon: Tag,
         label: "Khuyến mãi",
+      },
+      {
+        path: "/admin/tour-costs", // <--- MENU MỚI CỦA ÔNG ĐÂY
+        icon: Receipt,
+        label: "Phiếu chi",
       },
     ],
   },

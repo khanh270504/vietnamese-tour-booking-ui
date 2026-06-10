@@ -9,8 +9,7 @@ import { TourQuickInfo } from "../features/tours/tourDetail/TourQuickInfo";
 export function TourDetailPage() {
   const { id } = useParams();
   
-  const { tour, isLoading } = useTourDetail(id);
-
+const { tour, schedules, isLoading } = useTourDetail(id);
   if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-[#f8fafc]">
@@ -71,8 +70,7 @@ const galleryImages = tour.imageUrls && tour.imageUrls.length > 0
           </div>
 
           <div className="lg:col-span-1">
-            <TourSidebar tour={tour} />
-          </div>
+<TourSidebar tour={tour} schedules={schedules} />          </div>
 
         </div>
       </div>

@@ -33,9 +33,27 @@ export const tourCostService = {
         const response = await api.patch(`${COST_API_URL}/${id}/status`, { status, note });
         return response.data.result;
     },
-
+    // getAll: async (): Promise<TourCostResponse[]> => {
+    //     const response = await api.get(COST_API_URL);
+    //     return response.data.result;
+    // },
     // 6. Xóa khoản chi (Nếu nhập sai hoàn toàn)
     delete: async (id: number): Promise<void> => {
         await api.delete(`${COST_API_URL}/${id}`);
-    }
+    },
+    getAll: async (page: number = 1, size: number = 10, keyword: string = "", status: string = ""): Promise<any> => {
+        const response = await api.get(COST_API_URL, {
+            params: {
+                page,
+                size,
+                keyword,
+                status
+            }
+        });
+        return response.data.result;
+    },
+    getStats: async (): Promise<{ totalAmount: number; totalUnpaid: number }> => {
+        const response = await api.get(`${COST_API_URL}/stats`);
+        return response.data.result;
+    },
 };

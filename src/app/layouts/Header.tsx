@@ -1,5 +1,4 @@
-﻿import { Link, useNavigate } from "react-router-dom";
-
+﻿import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
   Heart,
   ShoppingBag,
@@ -11,584 +10,279 @@ import {
   X,
   ChevronDown,
 } from "lucide-react";
-
 import { LoginModal } from "../features/auth/LoginModal";
-
 import { useEffect, useRef, useState } from "react";
-
 import { useSelector, useDispatch } from "react-redux";
-
 import { RootState } from "../redux/store";
-
 import { logOut } from "../redux/authSlice";
-
 import { authService } from "../services/auth/auth.service";
+import { cn } from "../lib/utils";
 
 export function Header() {
-
   const navigate = useNavigate();
-
+  const location = useLocation();
   const dispatch = useDispatch();
 
-  /*
-  =========================================
-  STATES
-  =========================================
-  */
-
   const [showLoginModal, setShowLoginModal] = useState(false);
-
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
-
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  /*
-  =========================================
-  REDUX
-  =========================================
-  */
+  const { isLoggedIn, user } = useSelector((state: RootState) => state.auth);
 
-  const { isLoggedIn, user } = useSelector(
-    (state: RootState) => state.auth
-  );
-
-  /*
-  =========================================
-  CLOSE DROPDOWN WHEN CLICK OUTSIDE
-  =========================================
-  */
-
+  // Xử lý click ra ngoài dropdown
   useEffect(() => {
-
     const handleClickOutside = (event: MouseEvent) => {
-
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setUserDropdownOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener(
-        "mousedown",
-        handleClickOutside
-      );
-    };
-
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  /*
-  =========================================
-  HANDLERS
-  =========================================
-  */
+  // Khóa cuộn trang khi mở menu Mobile
+  useEffect(() => {
+    if (mobileMenuOpen) document.body.style.overflow = "hidden";
+    else document.body.style.overflow = "auto";
+  }, [mobileMenuOpen]);
 
-  const handleMyOrdersClick = (
-    e: React.MouseEvent
-  ) => {
+  // Đóng menu mobile khi chuyển trang
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
 
+  const handleMyOrdersClick = (e: React.MouseEvent) => {
     e.preventDefault();
-
     if (!isLoggedIn) {
-
       setShowLoginModal(true);
-
       return;
     }
-
     navigate("/my-orders");
   };
 
   const handleLogout = async () => {
-
     try {
-
       await authService.logout();
-
     } catch (error) {
       console.error(error);
     }
-
     dispatch(logOut());
-
     setUserDropdownOpen(false);
-
     navigate("/");
   };
 
-  /*
-  =========================================
-  NAV ITEMS
-  =========================================
-  */
-
   const navItems = [
-    {
-      name: "Trang chủ",
-      path: "/",
-    },
-    {
-      name: "Tour du lịch",
-      path: "/tours",
-    },
-    {
-      name: "Tra cứu",
-      path: "/lookup",
-    },
-    {
-      name: "Hỗ trợ",
-      path: "/support",
-    },
+    { name: "Trang chủ", path: "/" },
+    { name: "Tour du lịch", path: "/tours" },
+    { name: "Tra cứu", path: "/lookup" },
+    { name: "Hỗ trợ", path: "/support" },
   ];
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-gray-100 bg-white/80 backdrop-blur-xl shadow-sm">
-
-        <div className="container mx-auto px-4">
-
+      <header className="sticky top-0 z-[100] w-full border-b border-slate-100 bg-white/80 backdrop-blur-xl shadow-sm transition-all duration-300">
+        <div className="container mx-auto px-4 max-w-7xl">
           <div className="flex h-20 items-center justify-between">
-
-            {/* =========================================
-                LOGO
-            ========================================= */}
-
-            <Link
-              to="/"
-              className="flex items-center gap-2 group"
-            >
-
-              <div className="flex items-center gap-1 text-2xl font-black tracking-tighter text-blue-600 group-hover:scale-105 transition-transform">
-
-                <Sparkles
-                  size={20}
-                  className="text-orange-500"
-                  fill="currentColor"
-                />
-
-                TRAVEL
-                <span className="text-orange-500">
-                  VN
-                </span>
+            
+            {/* ==================== LOGO ==================== */}
+            <Link to="/" className="flex items-center gap-2 group shrink-0">
+              <div className="flex items-center gap-1.5 text-2xl font-black tracking-tighter text-blue-600 group-hover:scale-105 transition-transform duration-300">
+                <Sparkles size={24} className="text-orange-500 animate-pulse" fill="currentColor" />
+                TRAVEL<span className="text-orange-500">VN</span>
               </div>
             </Link>
 
-            {/* =========================================
-                DESKTOP NAV
-            ========================================= */}
-
-            <nav className="hidden md:flex items-center gap-8">
-
-              {navItems.map((item) => (
-
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className="relative text-sm font-black text-gray-600 hover:text-blue-600 transition-colors group"
-                >
-
-                  {item.name}
-
-                  <span className="absolute left-0 -bottom-1 h-0.5 w-0 bg-blue-600 transition-all duration-300 group-hover:w-full" />
-
-                </Link>
-              ))}
+            {/* ==================== DESKTOP NAV ==================== */}
+            <nav className="hidden lg:flex items-center gap-8">
+              {navItems.map((item) => {
+                const isActive = location.pathname === item.path || (item.path !== "/" && location.pathname.startsWith(item.path));
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={cn(
+                      "relative text-sm font-black transition-colors py-2 group",
+                      isActive ? "text-blue-600" : "text-slate-500 hover:text-blue-600"
+                    )}
+                  >
+                    {item.name}
+                    <span className={cn(
+                      "absolute left-1/2 -translate-x-1/2 -bottom-1 h-1 rounded-t-full bg-blue-600 transition-all duration-300",
+                      isActive ? "w-full" : "w-0 group-hover:w-full"
+                    )} />
+                  </Link>
+                );
+              })}
             </nav>
 
-            {/* =========================================
-                RIGHT SIDE
-            ========================================= */}
-
-            <div className="flex items-center gap-3">
-
-              {/* =========================================
-                  DESKTOP ACTIONS
-              ========================================= */}
-
-              <div className="hidden lg:flex items-center gap-5 pr-5 border-r border-gray-100">
-
-                {(user?.role?.includes("ADMIN") ||
-                  user?.role?.includes("admin")) && (
+            {/* ==================== RIGHT SIDE ==================== */}
+            <div className="flex items-center gap-4">
+              
+              {/* DESKTOP ACTIONS */}
+              <div className="hidden lg:flex items-center gap-4 pr-6 border-r border-slate-200">
+                {(user?.role?.includes("ADMIN") || user?.role?.includes("admin")) && (
                   <Link
                     to="/admin"
-                    className="flex items-center gap-2 rounded-xl bg-orange-50 px-3 py-2 text-xs font-black text-orange-600 hover:bg-orange-100 transition-all"
+                    className="flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-xs font-black text-white hover:bg-black hover:shadow-lg transition-all active:scale-95"
                   >
-
-                    <Shield size={14} />
-
-                    QUẢN TRỊ
+                    <Shield size={14} /> QUẢN TRỊ
                   </Link>
                 )}
 
-                <Link
-                  to="/wishlist"
-                  className="flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-blue-600 transition-colors"
-                >
-
-                  <Heart size={18} />
-
-                  <span className="hidden xl:inline">
-                    Yêu thích
-                  </span>
-                </Link>
+                {/* <Link to="/wishlist" className="flex items-center gap-2 text-sm font-black text-slate-500 hover:text-rose-500 transition-colors group">
+                  <div className="p-2 rounded-full group-hover:bg-rose-50 transition-colors"><Heart size={20} /></div>
+                  <span className="hidden xl:inline">Yêu thích</span>
+                </Link> */}
 
                 <button
                   onClick={handleMyOrdersClick}
-                  className="flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-blue-600 transition-colors"
+                  className="flex items-center gap-2 text-sm font-black text-slate-500 hover:text-blue-600 transition-colors group"
                 >
-
-                  <ShoppingBag size={18} />
-
-                  <span className="hidden xl:inline">
-                    Đơn hàng
-                  </span>
+                  <div className="p-2 rounded-full group-hover:bg-blue-50 transition-colors"><ShoppingBag size={20} /></div>
+                  <span className="hidden xl:inline">Đơn hàng</span>
                 </button>
               </div>
 
-              {/* =========================================
-                  MOBILE MENU BUTTON
-              ========================================= */}
-
-              <button
-                onClick={() =>
-                  setMobileMenuOpen(true)
-                }
-                className="md:hidden p-2 rounded-xl hover:bg-gray-100"
-              >
-
-                <Menu size={24} />
-              </button>
-
-              {/* =========================================
-                  AUTH
-              ========================================= */}
-
+              {/* AUTH & USER DROPDOWN */}
               {!isLoggedIn ? (
-
-                <div className="hidden md:flex items-center gap-2">
-
+                <div className="hidden lg:flex items-center gap-3">
                   <button
-                    onClick={() =>
-                      setShowLoginModal(true)
-                    }
-                    className="rounded-2xl px-5 py-2.5 text-sm font-black text-blue-600 hover:bg-blue-50 transition-all"
+                    onClick={() => setShowLoginModal(true)}
+                    className="rounded-2xl px-5 py-2.5 text-sm font-black text-slate-600 hover:bg-slate-50 hover:text-blue-600 transition-all"
                   >
-
                     ĐĂNG NHẬP
                   </button>
-
                   <Link
                     to="/register"
-                    className="rounded-2xl bg-blue-600 px-6 py-2.5 text-sm font-black text-white hover:bg-blue-700 shadow-lg shadow-blue-100 transition-all active:scale-95"
+                    className="rounded-2xl bg-blue-600 px-6 py-2.5 text-sm font-black text-white hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all active:scale-95"
                   >
-
                     ĐĂNG KÝ
                   </Link>
                 </div>
-
               ) : (
-
-                /*
-                =========================================
-                USER DROPDOWN
-                =========================================
-                */
-
-                <div
-                  className="relative"
-                  ref={dropdownRef}
-                >
-
+                <div className="relative hidden lg:block" ref={dropdownRef}>
                   <button
-                    onClick={() =>
-                      setUserDropdownOpen(
-                        !userDropdownOpen
-                      )
-                    }
-                    className="flex items-center gap-3 rounded-full border border-gray-100 bg-gray-50 p-1.5 pr-4 hover:bg-gray-100 transition-all"
+                    onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                    className="flex items-center gap-3 rounded-full border border-slate-200 bg-white p-1 pr-4 hover:shadow-md hover:border-blue-200 transition-all"
                   >
-
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-tr from-blue-600 to-blue-400 text-white shadow-sm">
-
+                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 text-white shadow-sm">
                       <User size={18} />
                     </div>
-
-                    <div className="hidden md:flex flex-col text-left">
-
-                      <span className="text-[10px] font-black uppercase tracking-wide text-gray-400">
-
-                        Thành viên
-                      </span>
-
-                      <span className="text-sm font-black text-gray-800">
-
-                        {user?.name || "Tài khoản"}
+                    <div className="flex flex-col text-left">
+                      <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 leading-none mb-0.5">Thành viên</span>
+                      <span className="text-xs font-black text-slate-800 leading-none truncate max-w-[100px]">
+                        {user?.name?.split(" ")[0] || "Tài khoản"}
                       </span>
                     </div>
-
-                    <ChevronDown
-                      size={16}
-                      className={`transition-transform ${
-                        userDropdownOpen
-                          ? "rotate-180"
-                          : ""
-                      }`}
-                    />
+                    <ChevronDown size={14} className={cn("text-slate-400 transition-transform duration-300", userDropdownOpen && "rotate-180")} />
                   </button>
 
-                  {/* =========================================
-                      DROPDOWN MENU
-                  ========================================= */}
-
                   {userDropdownOpen && (
-
-                    <div className="absolute right-0 mt-3 w-64 overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-2xl">
-
-                      <div className="border-b border-gray-100 p-5">
-
-                        <p className="text-sm font-black text-gray-900">
-
-                          {user?.name || "Tài khoản"}
-                        </p>
-
-                        <p className="mt-1 text-xs text-gray-500">
-
-                          {user?.email}
-                        </p>
+                    <div className="absolute right-0 mt-3 w-64 overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-2xl animate-in fade-in slide-in-from-top-4 duration-200">
+                      <div className="bg-slate-50/50 p-5 border-b border-slate-100">
+                        <p className="text-sm font-black text-slate-900 truncate">{user?.name || "Tài khoản"}</p>
+                        <p className="mt-1 text-xs font-medium text-slate-500 truncate">{user?.email}</p>
                       </div>
-
-                      <div className="p-2">
-
-                        <Link
-                          to="/profile"
-                          className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50"
-                        >
-
-                          <User size={18} />
-
-                          Hồ sơ
+                      <div className="p-2 space-y-1">
+                        <Link to="/profile" className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold text-slate-600 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                          <User size={18} /> Hồ sơ cá nhân
                         </Link>
-
-                        <Link
-                          to="/my-orders"
-                          className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50"
-                        >
-
-                          <ShoppingBag size={18} />
-
-                          Đơn hàng
+                        <Link to="/my-orders" className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold text-slate-600 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                          <ShoppingBag size={18} /> Đơn đặt tour
                         </Link>
-
-                        <Link
-                          to="/wishlist"
-                          className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50"
-                        >
-
-                          <Heart size={18} />
-
-                          Yêu thích
-                        </Link>
-
-                        {(user?.role?.includes("ADMIN") ||
-                          user?.role?.includes(
-                            "admin"
-                          )) && (
-
-                          <Link
-                            to="/admin"
-                            className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold text-orange-600 hover:bg-orange-50"
-                          >
-
-                            <Shield size={18} />
-
-                            Quản trị
-                          </Link>
-                        )}
-
-                        <button
-                          onClick={handleLogout}
-                          className="mt-1 flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold text-red-500 hover:bg-red-50"
-                        >
-
-                          <LogOut size={18} />
-
-                          Đăng xuất
+                        {/* <Link to="/wishlist" className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold text-slate-600 hover:bg-rose-50 hover:text-rose-600 transition-colors">
+                          <Heart size={18} /> Tour yêu thích
+                        </Link> */}
+                        <button onClick={handleLogout} className="w-full flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold text-rose-500 hover:bg-rose-50 transition-colors mt-2">
+                          <LogOut size={18} /> Đăng xuất
                         </button>
                       </div>
                     </div>
                   )}
                 </div>
               )}
+
+              {/* MOBILE MENU BUTTON */}
+              <button
+                onClick={() => setMobileMenuOpen(true)}
+                className="lg:hidden p-2 rounded-xl bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors"
+              >
+                <Menu size={24} />
+              </button>
             </div>
           </div>
         </div>
       </header>
 
-      {/* =========================================
-          MOBILE DRAWER
-      ========================================= */}
-
+      {/* ==================== MOBILE DRAWER ==================== */}
       {mobileMenuOpen && (
-
-        <div className="fixed inset-0 z-[100] md:hidden">
-
+        <div className="fixed inset-0 z-[200] lg:hidden">
           {/* Overlay */}
-          <div
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-            onClick={() =>
-              setMobileMenuOpen(false)
-            }
-          />
-
-          {/* Drawer */}
-          <div className="absolute left-0 top-0 flex h-full w-[290px] flex-col bg-white shadow-2xl">
-
-            {/* Header */}
-            <div className="flex items-center justify-between border-b border-gray-100 p-5">
-
-              <div className="flex items-center gap-1 text-2xl font-black tracking-tighter text-blue-600">
-
-                <Sparkles
-                  size={20}
-                  className="text-orange-500"
-                  fill="currentColor"
-                />
-
-                TRAVEL
-                <span className="text-orange-500">
-                  VN
-                </span>
+          <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300" onClick={() => setMobileMenuOpen(false)} />
+          
+          {/* Drawer Panel */}
+          <div className="absolute right-0 top-0 h-full w-[85vw] max-w-[320px] bg-white shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
+            
+            <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+              <div className="flex items-center gap-1.5 text-xl font-black text-blue-600">
+                <Sparkles size={20} className="text-orange-500" /> TRAVEL<span className="text-orange-500">VN</span>
               </div>
-
-              <button
-                onClick={() =>
-                  setMobileMenuOpen(false)
-                }
-                className="rounded-xl p-2 hover:bg-gray-100"
-              >
-
-                <X size={22} />
+              <button onClick={() => setMobileMenuOpen(false)} className="p-2 rounded-full bg-white border border-slate-200 text-slate-500 hover:bg-slate-50">
+                <X size={20} />
               </button>
             </div>
 
-            {/* User */}
             {isLoggedIn && (
-
-              <div className="border-b border-gray-100 p-5">
-
-                <div className="flex items-center gap-3">
-
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-tr from-blue-600 to-blue-400 text-white">
-
+              <div className="p-6 border-b border-slate-100">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 text-white shadow-md">
                     <User size={20} />
                   </div>
-
-                  <div>
-
-                    <p className="font-black text-gray-900">
-
-                      {user?.name}
-                    </p>
-
-                    <p className="text-xs text-gray-500">
-
-                      {user?.email}
-                    </p>
+                  <div className="overflow-hidden">
+                    <p className="font-black text-slate-900 truncate">{user?.name}</p>
+                    <p className="text-xs font-medium text-slate-500 truncate mt-0.5">{user?.email}</p>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* Nav */}
-            <div className="flex flex-col gap-1 p-4">
-
+            <div className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
               {navItems.map((item) => (
-
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  onClick={() =>
-                    setMobileMenuOpen(false)
-                  }
-                  className="rounded-2xl px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50"
-                >
-
+                <Link key={item.path} to={item.path} className="block rounded-2xl px-5 py-4 text-sm font-black text-slate-700 hover:bg-slate-50 active:bg-slate-100">
                   {item.name}
                 </Link>
               ))}
+              
+              <div className="h-px bg-slate-100 my-4 mx-2" />
 
-              <Link
-                to="/wishlist"
-                className="rounded-2xl px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50"
-              >
+              {/* <Link to="/wishlist" className="flex items-center gap-3 rounded-2xl px-5 py-4 text-sm font-black text-slate-700 hover:bg-slate-50 active:bg-slate-100">
+                <Heart size={20} className="text-rose-500" /> Tour yêu thích
+              </Link> */}
+              <button onClick={handleMyOrdersClick} className="w-full flex items-center gap-3 rounded-2xl px-5 py-4 text-sm font-black text-slate-700 hover:bg-slate-50 active:bg-slate-100">
+                <ShoppingBag size={20} className="text-blue-500" /> Quản lý đơn hàng
+              </button>
 
-                Yêu thích
-              </Link>
-
-              <Link
-                to="/my-orders"
-                className="rounded-2xl px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50"
-              >
-
-                Đơn hàng
-              </Link>
-
-              {(user?.role?.includes("ADMIN") ||
-                user?.role?.includes("admin")) && (
-
-                <Link
-                  to="/admin"
-                  className="rounded-2xl px-4 py-3 text-sm font-bold text-orange-600 hover:bg-orange-50"
-                >
-
-                  Quản trị
+              {(user?.role?.includes("ADMIN") || user?.role?.includes("admin")) && (
+                <Link to="/admin" className="flex items-center gap-3 rounded-2xl px-5 py-4 text-sm font-black text-slate-900 bg-slate-100 mt-2">
+                  <Shield size={20} /> Trang Quản Trị
                 </Link>
               )}
             </div>
 
-            {/* Bottom */}
-            <div className="mt-auto border-t border-gray-100 p-4">
-
+            <div className="p-5 border-t border-slate-100 bg-slate-50/50">
               {!isLoggedIn ? (
-
-                <div className="space-y-3">
-
-                  <button
-                    onClick={() => {
-                      setShowLoginModal(true);
-                      setMobileMenuOpen(false);
-                    }}
-                    className="w-full rounded-2xl border border-gray-200 py-3 text-sm font-black"
-                  >
-
-                    Đăng nhập
+                <div className="flex flex-col gap-3">
+                  <button onClick={() => { setShowLoginModal(true); setMobileMenuOpen(false); }} className="w-full py-3.5 rounded-2xl border-2 border-slate-200 text-slate-700 font-black text-sm active:bg-slate-100">
+                    ĐĂNG NHẬP
                   </button>
-
-                  <Link
-                    to="/register"
-                    className="block w-full rounded-2xl bg-blue-600 py-3 text-center text-sm font-black text-white"
-                  >
-
-                    Đăng ký
+                  <Link to="/register" className="w-full py-3.5 rounded-2xl bg-blue-600 text-white text-center font-black text-sm shadow-lg shadow-blue-200 active:scale-95 transition-transform">
+                    ĐĂNG KÝ NGAY
                   </Link>
                 </div>
-
               ) : (
-
-                <button
-                  onClick={handleLogout}
-                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-red-50 py-3 text-sm font-black text-red-500"
-                >
-
-                  <LogOut size={18} />
-
-                  Đăng xuất
+                <button onClick={handleLogout} className="w-full flex items-center justify-center gap-2 rounded-2xl bg-rose-50 py-4 text-sm font-black text-rose-600 active:bg-rose-100 transition-colors">
+                  <LogOut size={18} /> ĐĂNG XUẤT TÀI KHOẢN
                 </button>
               )}
             </div>
@@ -596,16 +290,7 @@ export function Header() {
         </div>
       )}
 
-      {/* =========================================
-          LOGIN MODAL
-      ========================================= */}
-
-      <LoginModal
-        isOpen={showLoginModal}
-        onClose={() =>
-          setShowLoginModal(false)
-        }
-      />
+      <LoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
     </>
   );
 }

@@ -53,9 +53,8 @@ export function TourListingPage() {
              <TourFilter 
                currentFilters={filters} 
                onFilterChange={(newFilters) => {
-                 // 🎯 Giữ lại keyword khi bấm "Áp dụng bộ lọc"
                  setFilters({ ...newFilters, keyword: keywordFromUrl }); 
-                 setPage(1); // Lọc phát là phải nhảy về trang 1
+                 setPage(1); 
                }} 
                destinations={destinations} 
              />
@@ -82,13 +81,12 @@ export function TourListingPage() {
                  {tours.map((item) => (
                    <TourCard 
                       key={item.id} 
-                      tour={item} // 🎯 CHỈ CẦN TRUYỀN DUY NHẤT TOUR VÀO ĐÂY LÀ ĐỦ, MỌI THỨ ĐÃ CÓ BÊN TRONG
+                      tour={item}
                    />
                  ))}
               </div>
             )}
 
-            {/* --- PHÂN TRANG --- */}
             {!isLoading && tours.length > 0 && (
               <div className="mt-12">
                 <TourPagination 
