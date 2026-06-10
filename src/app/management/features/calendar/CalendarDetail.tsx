@@ -9,7 +9,7 @@ import { bookingService } from "../../../services/booking/booking.service";
 
 interface CalendarDetailProps {
   selected: ScheduleResponse | null;
-  onSaveSuccess?: () => void; // 🌟 Thêm prop này để báo cho file Cha (CalendarPage) reload lại lưới lịch khi sửa xong
+  onSaveSuccess?: () => void; 
 }
 
 interface Passenger {

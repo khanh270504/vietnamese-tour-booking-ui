@@ -22,21 +22,20 @@ export const staffService = {
         return response.data;
     },
 
-    // 3. Tạo mới nhân viên -> Trả về thẳng StaffProfileResponse
+    // 3. Tạo mới nhân viên 
     createStaff: async (data: StaffCreateRequest): Promise<ApiResponse<StaffProfileResponse>> => {
         const response = await api.post<ApiResponse<StaffProfileResponse>>(`${ADMIN_API_URL}/staffs`, data);
         return response.data;
     },
 
-    // 4. Cập nhật thông tin nhân viên -> Trả về thẳng StaffProfileResponse
+    // 4. Cập nhật thông tin nhân viên 
     updateStaff: async (userId: number, data: StaffUpdateRequest): Promise<ApiResponse<StaffProfileResponse>> => {
         const response = await api.put<ApiResponse<StaffProfileResponse>>(`${ADMIN_API_URL}/staffs/${userId}`, data);
         return response.data;
     },
 
-    // 5. Bật/Tắt trạng thái tài khoản nhân viên (Khóa/Mở khóa)
-    toggleStaffStatus: async (employeeCode: string): Promise<ApiResponse<string>> => {
-        const response = await api.patch<ApiResponse<string>>(`${ADMIN_API_URL}/staffs/${employeeCode}/toggle-status`);
+    toggleStaffStatus: async (staffId: number): Promise<ApiResponse<string>> => {
+        const response = await api.patch<ApiResponse<string>>(`${ADMIN_API_URL}/staffs/${staffId}/toggle-status`);
         return response.data;
     },
 

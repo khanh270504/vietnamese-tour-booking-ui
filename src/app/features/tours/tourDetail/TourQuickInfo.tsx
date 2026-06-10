@@ -10,7 +10,7 @@ export function TourQuickInfo({ tour }: TourQuickInfoProps) {
     {
       icon: Tag,
       label: "Mã Tour",
-      val: tour.tourcode || "Đang cập nhật",
+      val: tour.tourCode || "Đang cập nhật",
       color: "text-blue-600",
       bg: "bg-blue-50"
     },

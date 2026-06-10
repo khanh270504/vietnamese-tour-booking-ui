@@ -1,18 +1,20 @@
 import { useState, useMemo } from "react";
 import { Calendar, PhoneCall, AlertCircle, CheckCircle2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { ScheduleResponse, PricingConfigResponse } from "../../../services/tour/tour.types";
+import { ScheduleResponse, PricingConfigResponse, TourResponse } from "../../../services/tour/tour.types";
+import { cn } from "../../../lib/utils";
 
-export function TourSidebar({ tour }: { tour: any }) {
+interface TourSidebarProps {
+  tour: TourResponse | any; 
+  schedules: ScheduleResponse[]; 
+}
+
+export function TourSidebar({ tour, schedules = [] }: TourSidebarProps) {
   const navigate = useNavigate();
-  
   const [selectedSchedule, setSelectedSchedule] = useState<ScheduleResponse | null>(null);
 
   if (!tour) return null;
 
-  const schedules: ScheduleResponse[] = tour.schedules || [];
-
-  // 🎯 Hàm lấy giá Người lớn (ADULT) từ mảng pricings của một Schedule
   const getAdultPrice = (sch: ScheduleResponse): number | null => {
     if (!sch.pricings) return null;
     const adultPricing = sch.pricings.find((p: PricingConfigResponse) => p.passengerType === "ADULT");
@@ -20,20 +22,14 @@ export function TourSidebar({ tour }: { tour: any }) {
   };
 
   const displayPrice = useMemo(() => {
-    // 1. Nếu khách đã chọn một ngày cụ thể -> Hiện giá của ngày đó
-    if (selectedSchedule) {
-      return getAdultPrice(selectedSchedule);
-    }
-
+    if (selectedSchedule) return getAdultPrice(selectedSchedule);
+    
+    // Dùng thẳng mảng schedules luôn, bỏ safeSchedules
     const allPrices = schedules
       .map(s => getAdultPrice(s))
-      .filter((p): p is number => p !== null);
+      .filter((p): p is number => p !== null && p > 0);
 
-    if (allPrices.length > 0) {
-      return Math.min(...allPrices);
-    }
-
-    return tour.minPrice || null;
+    return allPrices.length > 0 ? Math.min(...allPrices) : (tour.minPrice || null);
   }, [selectedSchedule, schedules, tour.minPrice]);
 
   const handleBooking = () => {
@@ -43,7 +39,6 @@ export function TourSidebar({ tour }: { tour: any }) {
 
   return (
     <div className="bg-white rounded-[2.5rem] shadow-xl shadow-blue-900/5 border border-gray-100 p-8 sticky top-24 z-50">
-      
       {/* 💰 KHỐI GIÁ ĐỘNG */}
       <div className="mb-8">
         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">
@@ -73,18 +68,19 @@ export function TourSidebar({ tour }: { tour: any }) {
                 <div 
                   key={schedule.id}
                   onClick={() => !isFull && setSelectedSchedule(schedule)}
-                  className={`w-full flex items-center justify-between p-4 rounded-2xl border-2 transition-all cursor-pointer relative ${
+                  className={cn(
+                    "w-full flex items-center justify-between p-4 rounded-2xl border-2 transition-all cursor-pointer relative",
                     isFull 
-                    ? 'bg-gray-50 border-gray-50 opacity-40 cursor-not-allowed' 
-                    : isSelected 
-                      ? 'border-blue-600 bg-blue-50/50 ring-2 ring-blue-600 ring-inset' 
-                      : 'border-gray-100 hover:border-blue-300 bg-white shadow-sm'
-                  }`}
+                      ? 'bg-gray-50 border-gray-50 opacity-40 cursor-not-allowed' 
+                      : isSelected 
+                        ? 'border-blue-600 bg-blue-50/50 ring-2 ring-blue-600 ring-inset' 
+                        : 'border-gray-100 hover:border-blue-300 bg-white shadow-sm'
+                  )}
                 >
                   <div className="flex items-center gap-3">
-                    <Calendar className={`w-5 h-5 ${isSelected ? 'text-blue-600' : 'text-gray-400'}`} />
+                    <Calendar className={cn("w-5 h-5", isSelected ? 'text-blue-600' : 'text-gray-400')} />
                     <div className="flex flex-col">
-                      <span className={`text-sm font-black ${isSelected ? 'text-blue-700' : 'text-gray-800'}`}>
+                      <span className={cn("text-sm font-black", isSelected ? 'text-blue-700' : 'text-gray-800')}>
                         {new Date(schedule.departureDate).toLocaleDateString('vi-VN')}
                       </span>
                       <span className="text-[10px] text-gray-400 font-bold uppercase tracking-tight">
@@ -94,13 +90,14 @@ export function TourSidebar({ tour }: { tour: any }) {
                   </div>
 
                   <div className="flex flex-col items-end gap-1">
-                    <span className={`text-[9px] font-black px-2 py-1 rounded-lg ${
+                    <span className={cn("text-[9px] font-black px-2 py-1 rounded-lg", 
                       isFull ? 'bg-gray-200 text-gray-400' : 
-                      isSelected ? 'bg-blue-600 text-white' : 'bg-green-100 text-green-600'
-                    }`}>
+                      isSelected ? 'bg-blue-600 text-white pr-6' : 'bg-green-100 text-green-600'
+                    )}>
                       {isFull ? 'HẾT CHỖ' : `CÒN ${schedule.availableSlots}`}
                     </span>
-                    {isSelected && <CheckCircle2 size={14} className="text-blue-600 animate-in zoom-in" />}
+                    {/* Icon tích xanh khi chọn */}
+                    {isSelected && <CheckCircle2 size={14} className="text-white absolute right-3 top-1/2 -translate-y-1/2 animate-in zoom-in" />}
                   </div>
                 </div>
               );
@@ -118,11 +115,11 @@ export function TourSidebar({ tour }: { tour: any }) {
       <button 
         onClick={handleBooking}
         disabled={!selectedSchedule}
-        className={`w-full py-5 rounded-2xl font-black text-sm uppercase tracking-widest transition-all mb-6 shadow-lg ${
+        className={cn("w-full py-5 rounded-2xl font-black text-sm uppercase tracking-widest transition-all mb-6 shadow-lg",
           selectedSchedule 
           ? 'bg-blue-600 text-white shadow-blue-200 hover:bg-blue-700 active:scale-95' 
           : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-        }`}
+        )}
       >
         {selectedSchedule ? 'ĐẶT TOUR NGAY' : 'VUI LÒNG CHỌN NGÀY'}
       </button>
@@ -134,7 +131,7 @@ export function TourSidebar({ tour }: { tour: any }) {
         </div>
         <div>
           <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Cần hỗ trợ gấp?</p>
-          <p className="font-black text-gray-900 tracking-tight">1900 1234</p>
+          <p className="font-black text-gray-900 tracking-tight">1900 888 888</p>
         </div>
       </div>
     </div>

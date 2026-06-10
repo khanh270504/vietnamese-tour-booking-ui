@@ -70,6 +70,15 @@ export const tourService = {
         });
         return response.data;
     },
+    getScheduleDetail: async (id: number): Promise<ApiResponse<ScheduleResponse>> => {
+    const response = await api.get<ApiResponse<ScheduleResponse>>(`/api/v1/schedules/${id}`);
+    return response.data;
+    },
+
+    getSchedulesForAdmin: async (tourId: number): Promise<ApiResponse<ScheduleResponse[]>> => {
+        const response = await api.get<ApiResponse<ScheduleResponse[]>>(`/api/v1/admin/tour/${tourId}/schedules`);
+        return response.data;
+    },
 
     // ================= PRICING & SURCHARGE (GIÁ & PHỤ PHÍ) =================
 
@@ -105,7 +114,6 @@ export const tourService = {
         return response.data;
     },
 
-    // Đã gộp 2 hàm search lại thành 1 hàm chuẩn type nhất
     searchTours: async (
         params: TourSearchRequest & { page?: number; size?: number; sortBy?: string }
     ): Promise<ApiResponse<PageResponse<TourResponse>>> => {
@@ -120,7 +128,7 @@ export const tourService = {
         return response.data;
     },
 
-    // ================= XỬ LÝ HÌNH ẢNH (Đã fix FormData) =================
+    // ================= XỬ LÝ HÌNH ẢNH  =================
 
     createTourImage: async (data: TourImageRequest): Promise<ApiResponse<string>> => {
         const formData = new FormData();
@@ -135,7 +143,6 @@ export const tourService = {
         return response.data;
     },
 
-    // Hàm dự phòng: Nếu API Backend của sếp nhận "List<MultipartFile> files"
     createMultipleTourImages: async (tourId: number, files: File[]): Promise<ApiResponse<string[]>> => {
         const formData = new FormData();
         formData.append("tourId", tourId.toString());

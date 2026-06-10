@@ -1,21 +1,44 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+// 1. Import thêm useLocation ở đây
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Eye, EyeOff, Lock, Mail, ArrowLeft, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { authService } from "../services/auth/auth.service"; 
-// 🎯 Dùng component GoogleLogin chuẩn để lấy ID Token (JWT)
 import { GoogleLogin } from "@react-oauth/google"; 
 import { useDispatch } from 'react-redux';
 import { setCredentials } from '../redux/authSlice'; 
 
 export function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation(); // 2. Khởi tạo hook lấy vị trí
   const dispatch = useDispatch();
+  
   const [email, setEmail] = useState(""); 
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  // 🎯 3. HÀM ĐIỀU HƯỚNG THÔNG MINH DÙNG CHUNG CHO CẢ FORM VÀ GOOGLE
+  const handleRedirectAfterLogin = (userRole: string | undefined) => {
+    // Phân tích xem đường dẫn cũ từ Guard hoặc Modal truyền sang là Object hay String
+    const fromState = location.state?.from;
+    const redirectUrl = typeof fromState === "object" ? fromState.pathname : fromState;
+    const destination = redirectUrl || "/";
+
+    const cleanRole = userRole?.toUpperCase() || "";
+
+    // Nếu là khối văn phòng (ADMIN hoặc SALE)
+    if (cleanRole.includes("ADMIN") || cleanRole.includes("SALE")) {
+      // Nếu trước đó họ đang cố vào 1 trang admin cụ thể (vd: /admin/bookings), trả họ về đó. 
+      // Nếu không thì đưa vào trang tổng quan /admin
+      navigate(destination.startsWith("/admin") ? destination : "/admin", { replace: true });
+    } 
+    // Nếu là khách hàng bình thường
+    else {
+      navigate(destination, { replace: true });
+    }
+  };
 
   // 1. Login bằng Email/Password
   const handleLogin = async (e: React.FormEvent) => {
@@ -34,7 +57,8 @@ export function LoginPage() {
       dispatch(setCredentials({ token: response.result.token, user }));
 
       toast.success("Đăng nhập thành công!");
-      navigate(user?.role?.includes("ADMIN") ? "/admin" : "/");
+      // Gọi hàm điều hướng thông minh
+      handleRedirectAfterLogin(user?.role);
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Email hoặc mật khẩu không chính xác!");
     } finally {
@@ -62,17 +86,18 @@ export function LoginPage() {
 
           <h2 className="text-4xl font-black text-slate-900 mb-8">Đăng nhập</h2>
 
-          {/* 🎯 Google Login bọc trong div để chỉnh style */}
+          {/* 🎯 Google Login */}
           <div className="mb-8 w-full overflow-hidden rounded-2xl border-2 border-slate-100 h-[56px] flex items-center justify-center hover:border-slate-200 transition-all">
             <GoogleLogin 
               onSuccess={async (credentialResponse) => {
                 try {
-                  // Gửi JWT ID Token lên backend
                   const response = await authService.googleLogin(credentialResponse.credential!);
                   const user = authService.getUserProfile();
                   dispatch(setCredentials({ token: response.result.token, user }));
+                  
                   toast.success("Đăng nhập thành công!");
-                  navigate("/");
+                  // Gọi hàm điều hướng thông minh cho cả Google Login
+                  handleRedirectAfterLogin(user?.role);
                 } catch (err) {
                   toast.error("Xác thực thất bại!");
                 }

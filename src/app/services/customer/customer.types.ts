@@ -18,3 +18,13 @@ export interface CustomerUpdateProfileRequest {
     identityType: string;
     identityNumber: string;
 }
+export interface CustomerListResponse {
+    id: number;
+    fullName: string;
+    phone: string;
+    email: string;
+    address: string;
+    totalBookings: number;     
+    totalSpent: number;         
+    loyaltyPoints: number;     
+}

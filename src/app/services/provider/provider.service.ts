@@ -1,4 +1,4 @@
-import api from '../api'; // Đường dẫn tới file config Axios của sếp
+import api from '../api';
 import { ProviderRequest, ProviderResponse, ProviderStatus  } from './provider.types';
 
 const PROVIDER_API_URL = '/api/v1/providers';

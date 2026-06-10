@@ -16,11 +16,11 @@ export function Footer() {
             </p>
             <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
               <Phone className="w-4 h-4" />
-              <span>Hotline: 1900 1234</span>
+              <span>Hotline: 1900 888 888</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
               <Mail className="w-4 h-4" />
-              <span>info@travelvn.com</span>
+              <span>support@travelvn.com</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <MapPin className="w-4 h-4" />
